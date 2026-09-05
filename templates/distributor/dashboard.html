@@ -1,0 +1,131 @@
+{% load static %}<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Dashboard — Aizah Distributor Portal</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          brand: { 50:'#ecfeff',100:'#cffafe',200:'#a5f3fc',500:'#06b6d4',600:'#0891b2',700:'#0e7490',800:'#155e75',900:'#164e63' }
+        },
+        fontFamily: { sans: ['Inter','system-ui','sans-serif'] }
+      }
+    }
+  };
+</script>
+<style>
+  html { scroll-behavior: smooth; }
+  body { font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; }
+</style>
+</head>
+<body class="bg-slate-50 min-h-screen">
+
+{% include "distributor/_nav.html" %}
+
+<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+
+  {% include "distributor/_messages.html" %}
+
+  <div class="mb-8">
+    <h1 class="text-2xl font-bold text-slate-900">Welcome, {{ distributor.name }}</h1>
+    <p class="text-slate-500 text-sm mt-1">
+      Code: <span class="font-mono font-semibold text-slate-700">{{ distributor.distributor_code }}</span>
+      {% if distributor.business_name %}&mdash; {{ distributor.business_name }}{% endif %}
+    </p>
+  </div>
+
+  <!-- Stat cards -->
+  <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-10">
+    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5 text-center">
+      <p class="text-3xl font-bold text-amber-500">{{ counts.pending }}</p>
+      <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider mt-1">Pending</p>
+    </div>
+    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5 text-center">
+      <p class="text-3xl font-bold text-blue-600">{{ counts.confirmed }}</p>
+      <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider mt-1">Confirmed</p>
+    </div>
+    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5 text-center">
+      <p class="text-3xl font-bold text-emerald-600">{{ counts.fulfilled }}</p>
+      <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider mt-1">Fulfilled</p>
+    </div>
+    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5 text-center">
+      <p class="text-3xl font-bold text-slate-700">{{ counts.total }}</p>
+      <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider mt-1">All orders</p>
+    </div>
+  </div>
+
+  <!-- Action cards -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-10">
+    <a href="{% url 'accounts:distributor_catalog' %}"
+       class="bg-brand-600 hover:bg-brand-700 transition-colors rounded-xl p-6 flex items-center gap-4 group">
+      <div class="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center flex-shrink-0">
+        <svg class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
+        </svg>
+      </div>
+      <div>
+        <p class="text-white font-bold text-base">Place a New Order</p>
+        <p class="text-brand-100 text-sm mt-0.5">Browse products and submit an order request</p>
+      </div>
+    </a>
+
+    <a href="{% url 'accounts:order_history' %}"
+       class="bg-white hover:bg-slate-50 transition-colors rounded-xl border border-slate-200 shadow-sm p-6 flex items-center gap-4 group">
+      <div class="w-12 h-12 bg-slate-100 rounded-lg flex items-center justify-center flex-shrink-0">
+        <svg class="w-6 h-6 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+        </svg>
+      </div>
+      <div>
+        <p class="text-slate-900 font-bold text-base">Order History</p>
+        <p class="text-slate-500 text-sm mt-0.5">View past orders, quantities, and status</p>
+      </div>
+    </a>
+  </div>
+
+  <!-- Recent orders table -->
+  {% if recent_orders %}
+  <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+    <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+      <h2 class="font-semibold text-slate-800 text-sm">Recent Orders</h2>
+      <a href="{% url 'accounts:order_history' %}" class="text-xs text-brand-600 hover:text-brand-700 font-medium">View all &rarr;</a>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead class="bg-slate-50 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+          <tr>
+            <th class="px-6 py-3 text-left">Order</th>
+            <th class="px-6 py-3 text-left">Date</th>
+            <th class="px-6 py-3 text-left">Items</th>
+            <th class="px-6 py-3 text-left">Status</th>
+            <th class="px-6 py-3 text-left"></th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100">
+          {% for order in recent_orders %}
+          <tr class="hover:bg-slate-50 transition-colors">
+            <td class="px-6 py-3 font-mono font-semibold text-slate-700">#{{ order.pk }}</td>
+            <td class="px-6 py-3 text-slate-500">{{ order.created_at|date:"d M Y" }}</td>
+            <td class="px-6 py-3 text-slate-600">{{ order.items.count }} product{{ order.items.count|pluralize }}</td>
+            <td class="px-6 py-3">{% include "distributor/_status_badge.html" with status=order.status %}</td>
+            <td class="px-6 py-3">
+              <a href="{% url 'accounts:order_detail' order.pk %}" class="text-brand-600 hover:text-brand-700 font-medium text-xs">View</a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% endif %}
+
+</main>
+</body>
+</html>

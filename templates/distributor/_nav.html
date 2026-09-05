@@ -1,0 +1,29 @@
+{% load static %}
+<nav class="bg-brand-700 shadow">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between">
+    <div class="flex items-center gap-6">
+      <a href="{% url 'accounts:distributor_dashboard' %}" class="flex items-center gap-2">
+        <img src="{% static 'images/logo.png' %}" alt="Aizah" class="h-7" onerror="this.style.display='none'" />
+        <span class="text-white font-semibold text-sm hidden sm:block">Distributor Portal</span>
+      </a>
+      <a href="{% url 'accounts:distributor_catalog' %}"
+         class="text-brand-100 hover:text-white text-sm font-medium transition-colors">
+        Catalog
+      </a>
+      <a href="{% url 'accounts:order_history' %}"
+         class="text-brand-100 hover:text-white text-sm font-medium transition-colors">
+        Orders
+      </a>
+    </div>
+    <div class="flex items-center gap-4">
+      <span class="text-brand-200 text-xs hidden sm:block font-mono">{{ request.user.distributor_code }}</span>
+      <form method="post" action="{% url 'accounts:distributor_logout' %}" class="inline">
+        {% csrf_token %}
+        <button type="submit"
+          class="text-brand-100 hover:text-white text-sm font-medium transition-colors bg-transparent border-0 cursor-pointer p-0">
+          Sign out
+        </button>
+      </form>
+    </div>
+  </div>
+</nav>

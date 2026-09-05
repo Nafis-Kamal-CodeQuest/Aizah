@@ -1,0 +1,27 @@
+{% load static %}<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Sign Out — Aizah Distributor Portal</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<script>tailwind.config={theme:{extend:{colors:{brand:{600:'#0891b2',700:'#0e7490'}},fontFamily:{sans:['Inter','system-ui','sans-serif']}}}}</script>
+<style>body{font-family:'Inter',sans-serif;}</style>
+</head>
+<body class="bg-slate-50 min-h-screen flex items-center justify-center p-4">
+  <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 max-w-sm w-full text-center">
+    <h1 class="text-lg font-bold text-slate-900 mb-2">Sign out?</h1>
+    <p class="text-slate-500 text-sm mb-6">You will be returned to the distributor login page.</p>
+    <form method="post" action="{% url 'accounts:distributor_logout' %}">
+      {% csrf_token %}
+      <button type="submit"
+        class="w-full bg-brand-600 hover:bg-brand-700 text-white font-semibold py-2.5 px-4 rounded-lg transition text-sm mb-3">
+        Yes, sign me out
+      </button>
+    </form>
+    <a href="{% url 'accounts:distributor_dashboard' %}"
+       class="text-sm text-slate-500 hover:text-brand-600 transition">Cancel — go back</a>
+  </div>
+</body>
+</html>

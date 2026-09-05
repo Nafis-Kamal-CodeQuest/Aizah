@@ -1,0 +1,16 @@
+# Core
+Django==6.1
+Pillow==12.3.0
+
+# Production server
+gunicorn==23.0.0
+
+# Static file serving (with Brotli compression)
+whitenoise[brotli]==6.9.0
+
+# Django / asgiref transitive dependencies (pinned for reproducibility)
+asgiref==3.12.1
+sqlparse==0.6.0
+tzdata==2026.3
+packaging==26.3
+brotli==1.2.0

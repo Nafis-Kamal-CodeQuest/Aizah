@@ -193,7 +193,31 @@
         <!-- Desktop Nav -->
         <nav class="hidden md:flex items-center gap-1" aria-label="Primary">
           <a href="#home" class="nav-link px-4 py-2 text-sm font-medium text-slate-200 hover:text-cyan-200 hover:bg-white/5 rounded-lg transition focus-ring">Home</a>
-          <a href="#products" class="nav-link px-4 py-2 text-sm font-medium text-slate-200 hover:text-cyan-200 hover:bg-white/5 rounded-lg transition focus-ring">Products</a>
+
+          <!-- Products dropdown -->
+          <div class="relative group" id="productsDropdown">
+            <button class="nav-link px-4 py-2 text-sm font-medium text-slate-200 hover:text-cyan-200 hover:bg-white/5 rounded-lg transition focus-ring inline-flex items-center gap-1.5"
+                    aria-haspopup="true" aria-expanded="false" id="productsDropBtn">
+              Products
+              <svg class="w-3.5 h-3.5 transition-transform duration-200 group-hover:rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+            </button>
+            <!-- Dropdown panel -->
+            <div id="productsDropPanel"
+                 class="absolute left-0 top-full mt-1 w-48 bg-slate-900 border border-slate-700 rounded-xl shadow-2xl overflow-hidden opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-150 z-50">
+              <a href="#products"
+                 class="flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-200 hover:bg-white/10 hover:text-cyan-200 transition">
+                <svg class="w-4 h-4 text-brand-400 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2h18M3 2v18M3 2l9 9M21 2v18M21 2l-9 9"/><circle cx="12" cy="16" r="4"/></svg>
+                Foods
+              </a>
+              <div class="border-t border-slate-700/60"></div>
+              <a href="#homecare"
+                 class="flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-200 hover:bg-white/10 hover:text-cyan-200 transition">
+                <svg class="w-4 h-4 text-accent-400 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                Home Care
+              </a>
+            </div>
+          </div>
+
           <a href="#about" class="nav-link px-4 py-2 text-sm font-medium text-slate-200 hover:text-cyan-200 hover:bg-white/5 rounded-lg transition focus-ring">About Us</a>
           <a href="#contact" class="nav-link px-4 py-2 text-sm font-medium text-slate-200 hover:text-cyan-200 hover:bg-white/5 rounded-lg transition focus-ring">Contact</a>
         </nav>
@@ -229,7 +253,25 @@
       </div>
       <nav class="flex-1 px-3 py-4 flex flex-col gap-1" aria-label="Mobile">
         <a href="#home" class="mobile-link px-4 py-3 text-base font-medium text-slate-200 hover:bg-white/5 hover:text-cyan-200 rounded-lg transition">Home</a>
-        <a href="#products" class="mobile-link px-4 py-3 text-base font-medium text-slate-200 hover:bg-white/5 hover:text-cyan-200 rounded-lg transition">Products</a>
+        <!-- Products accordion -->
+        <div>
+          <button id="mobileProductsBtn"
+                  class="w-full flex items-center justify-between px-4 py-3 text-base font-medium text-slate-200 hover:bg-white/5 hover:text-cyan-200 rounded-lg transition"
+                  aria-expanded="false">
+            Products
+            <svg id="mobileProductsChevron" class="w-4 h-4 transition-transform duration-200" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+          </button>
+          <div id="mobileProductsMenu" class="hidden pl-4 flex flex-col gap-0.5">
+            <a href="#products" class="mobile-link px-4 py-2.5 text-sm font-medium text-slate-300 hover:bg-white/5 hover:text-cyan-200 rounded-lg transition flex items-center gap-2">
+              <svg class="w-4 h-4 text-brand-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2h18M3 2v18M3 2l9 9M21 2v18M21 2l-9 9"/><circle cx="12" cy="16" r="4"/></svg>
+              Foods
+            </a>
+            <a href="#homecare" class="mobile-link px-4 py-2.5 text-sm font-medium text-slate-300 hover:bg-white/5 hover:text-cyan-200 rounded-lg transition flex items-center gap-2">
+              <svg class="w-4 h-4 text-accent-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+              Home Care
+            </a>
+          </div>
+        </div>
         <a href="#about" class="mobile-link px-4 py-3 text-base font-medium text-slate-200 hover:bg-white/5 hover:text-cyan-200 rounded-lg transition">About Us</a>
         <a href="#contact" class="mobile-link px-4 py-3 text-base font-medium text-slate-200 hover:bg-white/5 hover:text-cyan-200 rounded-lg transition">Contact</a>
       </nav>
@@ -359,6 +401,42 @@
           <button id="resetFilters" class="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-brand-700 hover:text-brand-800 transition">
             Reset filters
           </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ HOME CARE CATALOG ============ -->
+    <section id="homecare" class="py-16 sm:py-20 bg-slate-50 border-t border-slate-100">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center max-w-2xl mx-auto mb-10">
+          <span class="inline-flex items-center gap-2 text-xs font-semibold text-accent-700 bg-accent-50 border border-accent-100 px-3 py-1 rounded-full">Home Care Catalog</span>
+          <h2 class="mt-3 text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-slate-900">Home Care Products</h2>
+          <p class="mt-3 text-slate-600">Household essentials crafted for modern trade. Pricing available to verified trade accounts.</p>
+        </div>
+
+        <!-- Search + Filters -->
+        <div class="max-w-3xl mx-auto mb-10">
+          <div class="relative">
+            <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+            <input id="hcSearchInput" type="text" placeholder="Search home care products" class="w-full pl-12 pr-4 py-3.5 text-sm bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-accent-500 focus:border-transparent transition" aria-label="Search home care products" />
+            <button id="hcClearSearch" class="hidden absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 inline-flex items-center justify-center rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition" aria-label="Clear search">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+          </div>
+          <div id="hcCategoryPills" class="mt-5 flex flex-wrap justify-center gap-2 no-scrollbar"></div>
+        </div>
+
+        <!-- Grid -->
+        <div id="hcProductsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6"></div>
+
+        <!-- Empty state -->
+        <div id="hcEmptyState" class="hidden text-center py-16">
+          <div class="w-16 h-16 mx-auto rounded-full bg-slate-100 flex items-center justify-center mb-4">
+            <svg class="w-8 h-8 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/><path d="M8 11h6"/></svg>
+          </div>
+          <h3 class="text-lg font-semibold text-slate-900">No products found</h3>
+          <p class="mt-1 text-sm text-slate-500">Try a different search term or category.</p>
+          <button id="hcResetFilters" class="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-accent-700 hover:text-accent-800 transition">Reset filters</button>
         </div>
       </div>
     </section>
@@ -678,9 +756,10 @@
   /* -----------------------------------------------------------
      1. DATA (from Django context)
      ----------------------------------------------------------- */
-  const carouselSlides = {{ carousel_slides_json|safe }};
-  const products       = {{ products_json|safe }};
-  const offers         = {{ offers_json|safe }};
+  const carouselSlides    = {{ carousel_slides_json|safe }};
+  const products          = {{ products_json|safe }};
+  const homecareProducts  = {{ homecare_products_json|safe }};
+  const offers            = {{ offers_json|safe }};
 
   /* -----------------------------------------------------------
      2. UTILITIES
@@ -1324,8 +1403,9 @@
   /* -----------------------------------------------------------
      9. PRODUCT MODAL
      ----------------------------------------------------------- */
-  function openModal(id) {
-    var product = products.find(function (p) { return p.id === id; });
+  function openModal(id, productList) {
+    var list    = productList || products;
+    var product = list.find(function (p) { return p.id === id; });
     if (!product) return;
 
     var modal    = $('#productModal');
@@ -1433,7 +1513,191 @@
   }
 
   /* -----------------------------------------------------------
-     11. BACK TO TOP
+     11. HOME CARE CATALOG
+     ----------------------------------------------------------- */
+
+  var hcState = { activeCategory: 'All', searchTerm: '' };
+
+  function getHCCategories() {
+    return ['All'].concat(Array.from(new Set(homecareProducts.map(function (p) { return p.category; }))));
+  }
+
+  function renderHCCategoryPills() {
+    var wrap = $('#hcCategoryPills');
+    if (!wrap) return;
+    var cats = getHCCategories();
+    wrap.innerHTML = cats.map(function (c) {
+      var active = c === hcState.activeCategory;
+      return '<button data-hccat="' + escapeHtml(c) + '" class="hc-pill focus-ring text-sm font-semibold px-4 py-2 rounded-full border transition ' +
+        (active
+          ? 'bg-accent-500 text-white border-accent-500 shadow-sm'
+          : 'bg-white text-slate-700 border-slate-200 hover:border-accent-400 hover:text-accent-700') + '">' +
+        escapeHtml(c) + '</button>';
+    }).join('');
+    $$('.hc-pill', wrap).forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        hcState.activeCategory = btn.dataset.hccat;
+        renderHCCategoryPills();
+        renderHCProducts();
+      });
+    });
+  }
+
+  function filterHCProducts() {
+    var term = hcState.searchTerm.trim().toLowerCase();
+    return homecareProducts.filter(function (p) {
+      var matchCat    = hcState.activeCategory === 'All' || p.category === hcState.activeCategory;
+      var matchSearch = !term || p.name.toLowerCase().includes(term) || p.category.toLowerCase().includes(term);
+      return matchCat && matchSearch;
+    });
+  }
+
+  function renderHCProducts() {
+    var grid  = $('#hcProductsGrid');
+    var empty = $('#hcEmptyState');
+    if (!grid) return;
+    var list = filterHCProducts();
+
+    if (!list.length) {
+      grid.innerHTML = '';
+      grid.classList.add('hidden');
+      if (empty) empty.classList.remove('hidden');
+      return;
+    }
+    if (empty) empty.classList.add('hidden');
+    grid.classList.remove('hidden');
+
+    grid.innerHTML = list.map(function (p, i) {
+      return '<article class="hc-product-card group bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-card hover:shadow-card-hover hover:-translate-y-1 transition-all duration-300 cursor-pointer fade-up" data-id="' + escapeHtml(p.id) + '" style="animation-delay:' + ((i % 8) * 60) + 'ms" tabindex="0" role="button" aria-label="View details for ' + escapeHtml(p.name) + '">' +
+        '<div class="relative aspect-square overflow-hidden bg-slate-100">' +
+          '<img src="' + escapeHtml(p.image) + '" alt="' + escapeHtml(p.name) + '" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />' +
+          '<div class="absolute top-3 left-3"><span class="inline-flex items-center text-[11px] font-semibold text-slate-700 bg-white/90 backdrop-blur-sm border border-slate-200 px-2.5 py-1 rounded-full shadow-sm">' + escapeHtml(p.category) + '</span></div>' +
+        '</div>' +
+        '<div class="p-4 sm:p-5">' +
+          '<h3 class="font-bold text-slate-900 text-sm sm:text-base leading-snug line-clamp-2 min-h-[2.5rem]">' + escapeHtml(p.name) + '</h3>' +
+          '<p class="mt-1.5 text-xs text-slate-500 line-clamp-2">' + escapeHtml(p.description) + '</p>' +
+          '<div class="mt-4 flex items-center justify-between">' +
+            '<span class="text-xs font-medium text-slate-400">B2B Catalog</span>' +
+            '<span class="inline-flex items-center gap-1 text-xs font-semibold text-accent-700 group-hover:gap-2 transition-all">View Details <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span>' +
+          '</div>' +
+        '</div>' +
+      '</article>';
+    }).join('');
+
+    $$('.hc-product-card', grid).forEach(function (card) {
+      var id = card.dataset.id;
+      // reuse the same modal — find the matching product from homecareProducts
+      card.addEventListener('click', function () { openModal(id, homecareProducts); });
+      card.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openModal(id, homecareProducts); }
+      });
+    });
+  }
+
+  function initHCSearch() {
+    var input    = $('#hcSearchInput');
+    var clearBtn = $('#hcClearSearch');
+    var resetBtn = $('#hcResetFilters');
+    if (!input) return;
+
+    var handleInput = debounce(function (value) {
+      hcState.searchTerm = value;
+      renderHCProducts();
+      if (clearBtn) clearBtn.classList.toggle('hidden', !value);
+    }, 280);
+
+    input.addEventListener('input', function (e) { handleInput(e.target.value); });
+
+    if (clearBtn) {
+      clearBtn.addEventListener('click', function () {
+        input.value = '';
+        hcState.searchTerm = '';
+        clearBtn.classList.add('hidden');
+        renderHCProducts();
+        input.focus();
+      });
+    }
+
+    if (resetBtn) {
+      resetBtn.addEventListener('click', function () {
+        hcState.searchTerm = '';
+        hcState.activeCategory = 'All';
+        input.value = '';
+        if (clearBtn) clearBtn.classList.add('hidden');
+        renderHCCategoryPills();
+        renderHCProducts();
+      });
+    }
+  }
+
+  /* -----------------------------------------------------------
+     11b. PRODUCTS DROPDOWN — keyboard + click handling
+     ----------------------------------------------------------- */
+
+  function initProductsDropdown() {
+    var btn   = $('#productsDropBtn');
+    var panel = $('#productsDropPanel');
+    if (!btn || !panel) return;
+
+    // Also open/close on click (for keyboard/touch users who can't hover)
+    btn.addEventListener('click', function () {
+      var open = panel.classList.contains('opacity-100');
+      if (open) {
+        panel.classList.remove('opacity-100', 'visible');
+        panel.classList.add('opacity-0', 'invisible');
+        btn.setAttribute('aria-expanded', 'false');
+      } else {
+        panel.classList.add('opacity-100', 'visible');
+        panel.classList.remove('opacity-0', 'invisible');
+        btn.setAttribute('aria-expanded', 'true');
+      }
+    });
+
+    // Close when clicking outside
+    document.addEventListener('click', function (e) {
+      if (!btn.contains(e.target) && !panel.contains(e.target)) {
+        panel.classList.remove('opacity-100', 'visible');
+        panel.classList.add('opacity-0', 'invisible');
+        btn.setAttribute('aria-expanded', 'false');
+      }
+    });
+
+    // Close on Escape
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') {
+        panel.classList.remove('opacity-100', 'visible');
+        panel.classList.add('opacity-0', 'invisible');
+        btn.setAttribute('aria-expanded', 'false');
+      }
+    });
+  }
+
+  /* -----------------------------------------------------------
+     11c. MOBILE PRODUCTS ACCORDION
+     ----------------------------------------------------------- */
+
+  function initMobileProductsAccordion() {
+    var btn     = $('#mobileProductsBtn');
+    var menu    = $('#mobileProductsMenu');
+    var chevron = $('#mobileProductsChevron');
+    if (!btn || !menu) return;
+
+    btn.addEventListener('click', function () {
+      var open = !menu.classList.contains('hidden');
+      if (open) {
+        menu.classList.add('hidden');
+        chevron.style.transform = '';
+        btn.setAttribute('aria-expanded', 'false');
+      } else {
+        menu.classList.remove('hidden');
+        chevron.style.transform = 'rotate(180deg)';
+        btn.setAttribute('aria-expanded', 'true');
+      }
+    });
+  }
+
+  /* -----------------------------------------------------------
+     12. BACK TO TOP
      ----------------------------------------------------------- */
   function initBackToTop() {
     var btn = $('#backToTop');
@@ -1455,6 +1719,11 @@
     renderCategoryPills();
     renderProducts();
     initSearch();
+    renderHCCategoryPills();
+    renderHCProducts();
+    initHCSearch();
+    initProductsDropdown();
+    initMobileProductsAccordion();
     initModal();
     initContactForm();
     initBackToTop();

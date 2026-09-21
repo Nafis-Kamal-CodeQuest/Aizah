@@ -13,6 +13,7 @@ from .forms import ContactInquiryForm
 from .models import (
     Category, Product, CarouselAd, DiscountAnnouncement,
     CompanyInfo, ContactInfo,
+    HomeCareCategory, HomeCareProduct,
 )
 
 logger = logging.getLogger(__name__)
@@ -115,6 +116,24 @@ def home(request):
         for p in products_qs
     ]
 
+    # Home Care products — separate list, same shape as food products
+    homecare_qs = HomeCareProduct.objects.select_related('category').all()
+    homecare_products = [
+        {
+            'id': 'hc-' + (p.sku or str(p.pk)),
+            'name': p.name,
+            'category': p.category.name,
+            'image': _product_image_url(p),
+            'description': p.description,
+            'specifications': p.specifications or {},
+        }
+        for p in homecare_qs
+    ]
+
+    homecare_categories = list(
+        HomeCareCategory.objects.values('name', 'slug').order_by('name')
+    )
+
     carousel_qs = _active_scheduled(
         CarouselAd.objects.all(), active_field='active'
     ).order_by('order')
@@ -170,8 +189,10 @@ def home(request):
         'brand_full_name': brand_full_name,
         'carousel_slides_json': json.dumps(carousel_slides, ensure_ascii=False),
         'products_json': json.dumps(products, ensure_ascii=False),
+        'homecare_products_json': json.dumps(homecare_products, ensure_ascii=False),
         'offers_json': json.dumps(offers, ensure_ascii=False),
         'categories_json': json.dumps(categories, ensure_ascii=False),
+        'homecare_categories_json': json.dumps(homecare_categories, ensure_ascii=False),
         'categories': categories,
         'company': company,
         'contact': contact,

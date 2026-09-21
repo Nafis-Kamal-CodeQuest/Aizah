@@ -8,6 +8,7 @@ from django.utils.html import format_html
 from .models import (
     Category, Product, CarouselAd, DiscountAnnouncement,
     CompanyInfo, ContactInfo, ContactInquiry,
+    HomeCareCategory, HomeCareProduct,
     Order, OrderItem,
 )
 
@@ -187,6 +188,104 @@ class ContactInquiryAdmin(admin.ModelAdmin):
     list_filter = ['product_interest', 'created_at']
     search_fields = ['name', 'email', 'company']
     readonly_fields = ['created_at']
+
+
+# ---------------------------------------------------------------------------
+# Home Care
+# ---------------------------------------------------------------------------
+
+@admin.register(HomeCareCategory)
+class HomeCareCategoryAdmin(admin.ModelAdmin):
+    list_display = ['name', 'slug', 'created_at']
+    prepopulated_fields = {'slug': ('name',)}
+    search_fields = ['name']
+
+
+class HomeCareProductAdminForm(forms.ModelForm):
+    specifications = forms.CharField(
+        required=False,
+        widget=forms.Textarea(attrs={'rows': 8}),
+        help_text='Enter JSON, label/value lines, or plain text.',
+    )
+
+    class Meta:
+        model = HomeCareProduct
+        fields = '__all__'
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        value = self.initial.get('specifications')
+        if value is None and self.instance and self.instance.pk:
+            value = self.instance.specifications
+        if isinstance(value, (dict, list)):
+            self.fields['specifications'].initial = json.dumps(value, indent=2, ensure_ascii=False)
+        elif value not in (None, ''):
+            self.fields['specifications'].initial = value
+
+    def clean_specifications(self):
+        raw = self.cleaned_data.get('specifications', '')
+        if not raw:
+            return {}
+        if isinstance(raw, (dict, list)):
+            return raw
+        text = str(raw).strip()
+        if not text:
+            return {}
+        try:
+            parsed = json.loads(text)
+            if isinstance(parsed, dict):
+                return parsed
+            if isinstance(parsed, list):
+                return {'items': parsed}
+            return {'value': parsed}
+        except json.JSONDecodeError:
+            pass
+        parsed_lines = {}
+        for line in text.splitlines():
+            line = line.strip()
+            if not line:
+                continue
+            sep = ':' if ':' in line else ('=' if '=' in line else None)
+            if not sep:
+                parsed_lines = {}
+                break
+            k, v = line.split(sep, 1)
+            k, v = k.strip(), v.strip()
+            if not k or not v:
+                parsed_lines = {}
+                break
+            parsed_lines[k] = v
+        return parsed_lines if parsed_lines else {'value': text}
+
+    def clean_sku(self):
+        sku = self.cleaned_data.get('sku', '')
+        if sku is None:
+            return None
+        sku = str(sku).strip()
+        return sku or None
+
+
+@admin.register(HomeCareProduct)
+class HomeCareProductAdmin(admin.ModelAdmin):
+    form = HomeCareProductAdminForm
+    list_display = ['name', 'sku', 'category', 'image_preview', 'created_at']
+    list_filter = ['category', 'created_at']
+    search_fields = ['name', 'description']
+    list_select_related = ['category']
+    autocomplete_fields = ['category']
+    fields = ['category', 'name', 'sku', 'description', 'specifications',
+              'image', 'external_image_url', 'created_at', 'updated_at']
+    readonly_fields = ['created_at', 'updated_at']
+
+    def image_preview(self, obj):
+        url = obj.image_url()
+        if not url:
+            return 'No Image'
+        return format_html(
+            '<img src="{}" style="height:50px;border-radius:4px;" />',
+            url,
+        )
+    image_preview.short_description = 'Preview'
 
 
 # ---------------------------------------------------------------------------

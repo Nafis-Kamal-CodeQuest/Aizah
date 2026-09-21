@@ -318,6 +318,63 @@ class OrderItem(models.Model):
         return f'{self.product.name} × {self.quantity} (Order #{self.order_id})'
 
 
+class HomeCareCategory(models.Model):
+    name = models.CharField(max_length=100)
+    slug = models.SlugField(max_length=100, unique=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['name']
+        verbose_name = 'Home Care Category'
+        verbose_name_plural = 'Home Care Categories'
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            base_slug = slugify(self.name)
+            slug = base_slug
+            counter = 1
+            while HomeCareCategory.objects.filter(slug=slug).exists():
+                slug = f'{base_slug}-{counter}'
+                counter += 1
+            self.slug = slug
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return self.name
+
+
+class HomeCareProduct(models.Model):
+    name = models.CharField(max_length=200)
+    sku = models.CharField(max_length=20, unique=True, blank=True, null=True)
+    description = models.TextField()
+    specifications = models.JSONField(blank=True, default=dict)
+    image = models.ImageField(upload_to='homecare-products/', blank=True)
+    external_image_url = models.URLField(blank=True)
+    category = models.ForeignKey(
+        HomeCareCategory,
+        on_delete=models.PROTECT,
+        related_name='products',
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['name']
+        verbose_name = 'Home Care Product'
+        verbose_name_plural = 'Home Care Products'
+
+    def image_url(self):
+        if self.external_image_url:
+            return self.external_image_url
+        if self.image:
+            return self.image.url
+        return ''
+
+    def __str__(self):
+        return self.name
+
+
 class ContactInquiry(models.Model):
     PRODUCT_INTEREST_CHOICES = [
         ('Chanachur & Snacks', 'Chanachur & Snacks'),

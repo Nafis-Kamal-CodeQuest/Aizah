@@ -1,4 +1,4 @@
-﻿{% load static %}<!DOCTYPE html>
+{% load static %}<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
@@ -183,7 +183,7 @@
       <div class="flex items-center justify-between h-16 lg:h-20">
         <!-- Brand -->
         <a href="#home" class="flex items-center gap-3 focus-ring rounded-lg">
-          <img src="{% static 'images/logo.png' %}" alt="Aizah" class="h-14 sm:h-16 w-auto max-h-16 object-contain" />
+          <img src="{% static 'images/logo.png' %}" alt="Aizah" class="h-14 sm:h-16 w-auto max-h-16 object-contain">
           <div class="flex flex-col leading-none">
             <span class="text-[10px] font-semibold uppercase tracking-[0.35em] text-cyan-200">FMCG Co.</span>
             <span class="text-xs text-slate-400">Trusted trade partner</span>
@@ -200,7 +200,7 @@
 
         <!-- CTA + Distributor Login + Hamburger -->
         <div class="flex items-center gap-3">
-          <a href="/distributor/login/" class="hidden md:inline-flex items-center gap-1.5 text-slate-300 hover:text-white border border-slate-600 hover:border-slate-400 text-sm font-medium px-4 py-2 rounded-lg transition focus-ring">
+          <a href="{% url 'accounts:distributor_login' %}" class="hidden md:inline-flex items-center gap-1.5 text-slate-300 hover:text-white border border-slate-600 hover:border-slate-400 text-sm font-medium px-4 py-2 rounded-lg transition focus-ring">
             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
             Distributor Login
           </a>
@@ -1469,6 +1469,3 @@
 </script>
 </body>
 </html>
-
-
-

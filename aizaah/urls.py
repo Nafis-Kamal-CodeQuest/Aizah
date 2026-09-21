@@ -9,10 +9,8 @@ urlpatterns = [
     path('', include('core.urls')),
 ]
 
-# Explicitly serve static and media files (works in production and under preview sub-paths)
+# Serve media files via Django view (handles both standard domain and cPanel preview URL)
 urlpatterns += [
-    re_path(r'^static/(?P<path>.*)$', serve, {'document_root': settings.STATIC_ROOT}),
-    re_path(r'^~siteqaxw/static/(?P<path>.*)$', serve, {'document_root': settings.STATIC_ROOT}),
     re_path(r'^media/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT}),
     re_path(r'^~siteqaxw/media/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT}),
 ]

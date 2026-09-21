@@ -22,6 +22,7 @@ ALLOWED_HOSTS = [
     'www.aizahfood.net',
     'localhost',
     '127.0.0.1',
+    '*',                        # Catch-all for cPanel preview subpaths
 ]
 
 CSRF_TRUSTED_ORIGINS = [
@@ -38,10 +39,6 @@ CSRF_TRUSTED_ORIGINS = [
 # AUTHENTICATION
 # ---------------------------------------------------------------------------
 
-# Keep the default ModelBackend first so Django admin (auth.User) continues
-# to work exactly as before.  The DistributorBackend is appended second; it
-# only activates when ``distributor_code=`` is passed to authenticate(), so
-# there is zero interference between the two backends.
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',   # admin / auth.User
     'accounts.backends.DistributorBackend',         # distributor portal
@@ -136,23 +133,26 @@ USE_I18N = True
 USE_TZ = True
 
 # ---------------------------------------------------------------------------
-# STATIC FILES (WhiteNoise)
+# STATIC & MEDIA FILES (Configured for cPanel Preview + Main Domain)
 # ---------------------------------------------------------------------------
 
-# Prefix paths with /~siteqaxw/ for cPanel IP preview testing
-STATIC_URL = '/~siteqaxw/static/'
+# Use dynamic path base for cPanel preview subpath (~siteqaxw) or standard domain
+STATIC_URL = '/~siteqaxw/static/' if '91.98.176.112' in str(ALLOWED_HOSTS) else '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-# Non-strict storage so missing static references don't crash collectstatic
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
-
-# ---------------------------------------------------------------------------
-# MEDIA FILES
-# ---------------------------------------------------------------------------
-
-MEDIA_URL = '/~siteqaxw/media/'
+MEDIA_URL = '/~siteqaxw/media/' if '91.98.176.112' in str(ALLOWED_HOSTS) else '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+
+# Django 4.2+ Storage Backend Definition
+STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
+    },
+}
 
 # ---------------------------------------------------------------------------
 # DEFAULT PRIMARY KEY
@@ -165,7 +165,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # ---------------------------------------------------------------------------
 
 if not DEBUG:
-    SECURE_SSL_REDIRECT = False  # Enable when custom SSL certificate is active
+    SECURE_SSL_REDIRECT = False
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
     SESSION_COOKIE_SECURE = False
     CSRF_COOKIE_SECURE = False
@@ -177,18 +177,14 @@ if not DEBUG:
 # ---------------------------------------------------------------------------
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'
-SESSION_COOKIE_AGE = 86400       # 1 day
-SESSION_COOKIE_HTTPONLY = True   # Prevent JS access to session cookie (Django default, made explicit)
-SESSION_COOKIE_SAMESITE = 'Lax'  # CSRF protection for cross-site requests
+SESSION_COOKIE_AGE = 86400
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SAMESITE = 'Lax'
 
 # ---------------------------------------------------------------------------
 # LOGIN / AUTHENTICATION URLS
 # ---------------------------------------------------------------------------
 
-# Default redirect for Django's built-in @login_required decorator.
-# Points to the distributor portal login so any accidentally-placed
-# @login_required on a distributor view redirects correctly.
-# Admin login is unaffected — it uses its own login URL independently.
 LOGIN_URL = '/distributor/login/'
 LOGIN_REDIRECT_URL = '/distributor/dashboard/'
 

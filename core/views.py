@@ -11,9 +11,9 @@ from django.views.decorators.http import require_POST
 
 from .forms import ContactInquiryForm
 from .models import (
-    Category, Product, CarouselAd, DiscountAnnouncement,
+    Category, Product, ProductImage, CarouselAd, DiscountAnnouncement,
     CompanyInfo, ContactInfo,
-    HomeCareCategory, HomeCareProduct,
+    HomeCareCategory, HomeCareProduct, HomeCareProductImage,
 )
 
 logger = logging.getLogger(__name__)
@@ -103,13 +103,20 @@ def home(request):
         Category.objects.values('name', 'slug').order_by('name')
     )
 
-    products_qs = Product.objects.select_related('category').all()
+    products_qs = Product.objects.select_related('category').prefetch_related('extra_images').all()
     products = [
         {
             'id': p.sku or str(p.pk),
             'name': p.name,
             'category': p.category.name,
             'image': _product_image_url(p),
+            'images': (
+                [_product_image_url(p)] +
+                [request.build_absolute_uri(ei.image.url) if ei.image else ''
+                 for ei in p.extra_images.all()]
+            ) if _product_image_url(p) else
+                [request.build_absolute_uri(ei.image.url)
+                 for ei in p.extra_images.all() if ei.image],
             'description': p.description,
             'specifications': p.specifications or {},
         }
@@ -117,13 +124,20 @@ def home(request):
     ]
 
     # Home Care products — separate list, same shape as food products
-    homecare_qs = HomeCareProduct.objects.select_related('category').all()
+    homecare_qs = HomeCareProduct.objects.select_related('category').prefetch_related('extra_images').all()
     homecare_products = [
         {
             'id': 'hc-' + (p.sku or str(p.pk)),
             'name': p.name,
             'category': p.category.name,
             'image': _product_image_url(p),
+            'images': (
+                [_product_image_url(p)] +
+                [request.build_absolute_uri(ei.image.url) if ei.image else ''
+                 for ei in p.extra_images.all()]
+            ) if _product_image_url(p) else
+                [request.build_absolute_uri(ei.image.url)
+                 for ei in p.extra_images.all() if ei.image],
             'description': p.description,
             'specifications': p.specifications or {},
         }

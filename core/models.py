@@ -375,6 +375,36 @@ class HomeCareProduct(models.Model):
         return self.name
 
 
+class ProductImage(models.Model):
+    """Additional images for a Product. The primary image stays on Product.image."""
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='extra_images')
+    image = models.ImageField(upload_to='products/extra/')
+    order = models.PositiveIntegerField(default=0, help_text='Lower numbers appear first.')
+
+    class Meta:
+        ordering = ['order', 'pk']
+        verbose_name = 'Product Image'
+        verbose_name_plural = 'Product Images'
+
+    def __str__(self):
+        return f'Image for {self.product.name} (#{self.order})'
+
+
+class HomeCareProductImage(models.Model):
+    """Additional images for a HomeCareProduct."""
+    product = models.ForeignKey(HomeCareProduct, on_delete=models.CASCADE, related_name='extra_images')
+    image = models.ImageField(upload_to='homecare-products/extra/')
+    order = models.PositiveIntegerField(default=0, help_text='Lower numbers appear first.')
+
+    class Meta:
+        ordering = ['order', 'pk']
+        verbose_name = 'Home Care Product Image'
+        verbose_name_plural = 'Home Care Product Images'
+
+    def __str__(self):
+        return f'Image for {self.product.name} (#{self.order})'
+
+
 class ContactInquiry(models.Model):
     PRODUCT_INTEREST_CHOICES = [
         ('Chanachur & Snacks', 'Chanachur & Snacks'),

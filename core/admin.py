@@ -6,9 +6,9 @@ from django.core.exceptions import ValidationError
 from django.urls import reverse
 from django.utils.html import format_html
 from .models import (
-    Category, Product, CarouselAd, DiscountAnnouncement,
+    Category, Product, ProductImage, CarouselAd, DiscountAnnouncement,
     CompanyInfo, ContactInfo, ContactInquiry,
-    HomeCareCategory, HomeCareProduct,
+    HomeCareCategory, HomeCareProduct, HomeCareProductImage,
     Order, OrderItem,
 )
 
@@ -95,9 +95,16 @@ class CategoryAdmin(admin.ModelAdmin):
     search_fields = ['name']
 
 
+class ProductImageInline(admin.TabularInline):
+    model = ProductImage
+    extra = 1
+    fields = ['image', 'order']
+
+
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
     form = ProductAdminForm
+    inlines = [ProductImageInline]
     list_display = ['name', 'sku', 'category', 'image_preview', 'created_at']
     list_filter = ['category', 'created_at']
     search_fields = ['name', 'description']
@@ -265,9 +272,16 @@ class HomeCareProductAdminForm(forms.ModelForm):
         return sku or None
 
 
+class HomeCareProductImageInline(admin.TabularInline):
+    model = HomeCareProductImage
+    extra = 1
+    fields = ['image', 'order']
+
+
 @admin.register(HomeCareProduct)
 class HomeCareProductAdmin(admin.ModelAdmin):
     form = HomeCareProductAdminForm
+    inlines = [HomeCareProductImageInline]
     list_display = ['name', 'sku', 'category', 'image_preview', 'created_at']
     list_filter = ['category', 'created_at']
     search_fields = ['name', 'description']

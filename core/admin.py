@@ -6,8 +6,8 @@ from django.core.exceptions import ValidationError
 from django.urls import reverse
 from django.utils.html import format_html
 from .models import (
-    Category, Product, ProductImage, CarouselAd, DiscountAnnouncement,
-    CompanyInfo, ContactInfo, ContactInquiry,
+    Category, Product, ProductImage, CarouselAd, HomeCareCarouselAd,
+    DiscountAnnouncement, CompanyInfo, ContactInfo, ContactInquiry,
     HomeCareCategory, HomeCareProduct, HomeCareProductImage,
     Order, OrderItem,
 )
@@ -145,6 +145,34 @@ class CarouselAdAdmin(admin.ModelAdmin):
         return format_html(
             '<img src="{}" style="height: 60px; border-radius: 4px; object-fit: contain;" />',
             url,
+        )
+    media_preview.short_description = 'Preview'
+
+
+@admin.register(HomeCareCarouselAd)
+class HomeCareCarouselAdAdmin(admin.ModelAdmin):
+    list_display  = ['id', 'title', 'media_type', 'media_fit', 'media_preview', 'order', 'active', 'start_date', 'end_date']
+    list_editable = ['order', 'active']
+    list_filter   = ['media_type', 'media_fit', 'active']
+    ordering      = ['order']
+    fields        = [
+        'title', 'subtitle', 'tag', 'cta_text', 'cta_href',
+        'media_type', 'media_file', 'external_image_url', 'media_fit',
+        'order', 'active', 'start_date', 'end_date',
+        'created_at', 'updated_at',
+    ]
+    readonly_fields = ['created_at', 'updated_at']
+
+    def media_preview(self, obj):
+        url = obj.media_url()
+        if not url:
+            return 'No Media'
+        if obj.resolved_media_type() == 'video':
+            return format_html(
+                '<video src="{}" style="height: 60px;" controls></video>', url,
+            )
+        return format_html(
+            '<img src="{}" style="height: 60px; border-radius: 4px; object-fit: contain;" />', url,
         )
     media_preview.short_description = 'Preview'
 

@@ -1,0 +1,831 @@
+{% load static %}<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>{{ brand_name }} — Home Care Products</title>
+<meta name="description" content="{{ brand_name }} home care range: household essentials for modern trade. B2B catalog for distributors and wholesale partners." />
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          brand:  { 50:'#ecfeff',100:'#cffafe',200:'#a5f3fc',500:'#06b6d4',600:'#0891b2',700:'#0e7490',800:'#155e75',900:'#164e63' },
+          accent: { 50:'#fffbeb',100:'#fef3c7',200:'#fde68a',500:'#f59e0b',600:'#d97706',700:'#b45309',800:'#92400e',900:'#78350f' }
+        },
+        fontFamily: { sans: ['Inter','system-ui','sans-serif'] },
+        boxShadow: {
+          'card':       '0 1px 2px 0 rgb(15 23 42 / 0.04), 0 1px 3px 0 rgb(15 23 42 / 0.06)',
+          'card-hover': '0 10px 30px -10px rgb(15 23 42 / 0.18), 0 4px 12px -4px rgb(15 23 42 / 0.08)'
+        }
+      }
+    }
+  };
+</script>
+<style>
+  html { scroll-behavior: smooth; }
+  body { font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; }
+  .scroll-lock { overflow: hidden; }
+
+  /* Hero carousel */
+  .carousel-slide { transition: opacity 700ms ease-in-out; position: absolute; inset: 0; opacity: 0; }
+  .carousel-slide.active { opacity: 1; z-index: 10; }
+  .carousel-media-bg {
+    position: absolute; inset: 0;
+    background-size: cover; background-position: center center;
+    filter: blur(28px) saturate(1.05) brightness(0.55);
+    transform: scale(1.12); background-color: #020617;
+  }
+  .carousel-media { position: absolute; inset: 0; width: 100%; height: 100%; object-position: center center; background: transparent; }
+  .carousel-media.fit-cover   { object-fit: cover; }
+  .carousel-media.fit-contain { object-fit: contain; }
+  .carousel-video.fit-contain { object-fit: contain; }
+  .carousel-video.has-error   { opacity: 0; }
+
+  /* Hero overlay */
+  .hero-overlay {
+    background:
+      linear-gradient(90deg, rgba(2,6,23,0.62) 0%, rgba(2,6,23,0.32) 42%, rgba(2,6,23,0.10) 100%),
+      linear-gradient(0deg,  rgba(2,6,23,0.45) 0%, rgba(2,6,23,0) 38%),
+      radial-gradient(circle at 18% 24%, rgba(6,182,212,0.14) 0, rgba(6,182,212,0) 34%),
+      radial-gradient(circle at 82% 74%, rgba(245,158,11,0.08) 0, rgba(245,158,11,0) 30%);
+  }
+  .hero-overlay.is-light {
+    background:
+      linear-gradient(90deg, rgba(2,6,23,0.66) 0%, rgba(2,6,23,0.18) 55%, rgba(2,6,23,0) 100%),
+      linear-gradient(0deg,  rgba(2,6,23,0.55) 0%, rgba(2,6,23,0) 40%);
+  }
+
+  /* Mobile menu */
+  .mobile-menu-panel { transition: transform 320ms cubic-bezier(0.4,0,0.2,1); }
+
+  /* Modal */
+  .modal-backdrop { transition: opacity 250ms ease; }
+  .modal-panel    { transition: opacity 250ms ease, transform 280ms cubic-bezier(0.4,0,0.2,1); }
+
+  /* Utilities */
+  @keyframes fadeUp { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
+  .fade-up { animation: fadeUp 0.5s ease-out both; }
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  .focus-ring:focus-visible { outline: 2px solid #0891b2; outline-offset: 2px; }
+</style>
+</head>
+<body class="bg-[#f5fbfd] text-slate-900">
+
+<!-- ============================================================
+     NAVBAR
+     ============================================================ -->
+<header id="navbar" class="sticky top-0 z-40 bg-slate-950/95 text-white backdrop-blur-md border-b border-cyan-500/15">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center justify-between h-16 lg:h-20">
+
+      <!-- Brand -->
+      <a href="/" class="flex items-center gap-3 focus-ring rounded-lg">
+        <img src="{% static 'images/logo.png' %}" alt="Aizah" class="h-14 sm:h-16 w-auto max-h-16 object-contain" />
+        <div class="flex flex-col leading-none">
+          <span class="text-[10px] font-semibold uppercase tracking-[0.35em] text-cyan-200">FMCG Co.</span>
+          <span class="text-xs text-slate-400">Trusted trade partner</span>
+        </div>
+      </a>
+
+      <!-- Desktop Nav -->
+      <nav class="hidden md:flex items-center gap-1" aria-label="Primary">
+        <a href="/" class="nav-link px-4 py-2 text-sm font-medium text-slate-200 hover:text-cyan-200 hover:bg-white/5 rounded-lg transition focus-ring">Home</a>
+
+        <!-- Products dropdown — Home Care is active -->
+        <div class="relative group" id="productsDropdown">
+          <button class="nav-link px-4 py-2 text-sm font-medium text-cyan-200 bg-white/5 rounded-lg transition focus-ring inline-flex items-center gap-1.5"
+                  aria-haspopup="true" aria-expanded="false" id="productsDropBtn">
+            Products
+            <svg class="w-3.5 h-3.5 transition-transform duration-200 group-hover:rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+          </button>
+          <div id="productsDropPanel"
+               class="absolute left-0 top-full mt-1 w-48 bg-slate-900 border border-slate-700 rounded-xl shadow-2xl overflow-hidden opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-150 z-50">
+            <a href="/#products"
+               class="flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-200 hover:bg-white/10 hover:text-cyan-200 transition">
+              <svg class="w-4 h-4 text-brand-400 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2h18M3 2v18M3 2l9 9M21 2v18M21 2l-9 9"/><circle cx="12" cy="16" r="4"/></svg>
+              Foods
+            </a>
+            <div class="border-t border-slate-700/60"></div>
+            <a href="{% url 'core:homecare' %}"
+               class="flex items-center gap-3 px-4 py-3 text-sm font-medium text-cyan-200 bg-white/5 hover:bg-white/10 transition">
+              <svg class="w-4 h-4 text-accent-400 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+              Home Care
+            </a>
+          </div>
+        </div>
+
+        <a href="/#about"   class="nav-link px-4 py-2 text-sm font-medium text-slate-200 hover:text-cyan-200 hover:bg-white/5 rounded-lg transition focus-ring">About Us</a>
+        <a href="/#contact" class="nav-link px-4 py-2 text-sm font-medium text-slate-200 hover:text-cyan-200 hover:bg-white/5 rounded-lg transition focus-ring">Contact</a>
+      </nav>
+
+      <!-- CTA + Distributor Login + Hamburger -->
+      <div class="flex items-center gap-3">
+        <a href="{% url 'accounts:distributor_login' %}" class="hidden md:inline-flex items-center gap-1.5 text-slate-300 hover:text-white border border-slate-600 hover:border-slate-400 text-sm font-medium px-4 py-2 rounded-lg transition focus-ring">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+          Distributor Login
+        </a>
+        <a href="/#contact" class="hidden md:inline-flex items-center gap-2 bg-accent-500 hover:bg-accent-400 text-slate-950 text-sm font-semibold px-5 py-2.5 rounded-lg shadow-sm transition focus-ring">
+          Become a Distributor
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+        </a>
+        <button id="menuToggle" class="md:hidden inline-flex items-center justify-center w-10 h-10 rounded-lg text-slate-100 hover:bg-white/10 transition focus-ring" aria-label="Open menu" aria-expanded="false" aria-controls="mobileMenu">
+          <svg id="menuIconOpen"  class="w-6 h-6"        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+          <svg id="menuIconClose" class="w-6 h-6 hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+
+    </div>
+  </div>
+</header>
+
+<!-- ============================================================
+     MOBILE MENU
+     ============================================================ -->
+<div id="mobileMenu" class="fixed inset-0 z-50 md:hidden hidden" aria-modal="true" role="dialog">
+  <div id="menuBackdrop" class="absolute inset-0 bg-slate-900/50 backdrop-blur-sm opacity-0 transition-opacity duration-300"></div>
+  <div id="menuPanel" class="mobile-menu-panel absolute top-0 right-0 h-full w-72 max-w-[80%] bg-slate-950 text-white shadow-2xl flex flex-col translate-x-full border-l border-cyan-500/15">
+    <div class="flex items-center justify-between px-5 h-16 border-b border-white/10">
+      <img src="{% static 'images/logo.png' %}" alt="Aizah" class="h-10 w-auto max-h-12 object-contain" />
+      <button id="menuClose" class="w-9 h-9 inline-flex items-center justify-center rounded-lg text-slate-200 hover:bg-white/10 transition focus-ring" aria-label="Close menu">
+        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <nav class="flex-1 px-3 py-4 flex flex-col gap-1" aria-label="Mobile">
+      <a href="/" class="mobile-link px-4 py-3 text-base font-medium text-slate-200 hover:bg-white/5 hover:text-cyan-200 rounded-lg transition">Home</a>
+      <div>
+        <button id="mobileProductsBtn" class="w-full flex items-center justify-between px-4 py-3 text-base font-medium text-slate-200 hover:bg-white/5 hover:text-cyan-200 rounded-lg transition" aria-expanded="true">
+          Products
+          <svg id="mobileProductsChevron" class="w-4 h-4 rotate-180 transition-transform duration-200" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+        </button>
+        <div id="mobileProductsMenu" class="pl-4 flex flex-col gap-0.5">
+          <a href="/#products" class="mobile-link px-4 py-2.5 text-sm font-medium text-slate-300 hover:bg-white/5 hover:text-cyan-200 rounded-lg transition flex items-center gap-2">
+            <svg class="w-4 h-4 text-brand-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2h18M3 2v18M3 2l9 9M21 2v18M21 2l-9 9"/><circle cx="12" cy="16" r="4"/></svg>
+            Foods
+          </a>
+          <a href="{% url 'core:homecare' %}" class="mobile-link px-4 py-2.5 text-sm font-medium text-cyan-200 bg-white/5 rounded-lg flex items-center gap-2">
+            <svg class="w-4 h-4 text-accent-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            Home Care
+          </a>
+        </div>
+      </div>
+      <a href="/#about"   class="mobile-link px-4 py-3 text-base font-medium text-slate-200 hover:bg-white/5 hover:text-cyan-200 rounded-lg transition">About Us</a>
+      <a href="/#contact" class="mobile-link px-4 py-3 text-base font-medium text-slate-200 hover:bg-white/5 hover:text-cyan-200 rounded-lg transition">Contact</a>
+    </nav>
+    <div class="p-4 border-t border-white/10 flex flex-col gap-2">
+      <a href="/distributor/login/" class="mobile-link w-full inline-flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 border border-white/20 text-white text-sm font-semibold px-5 py-3 rounded-lg transition">
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+        Distributor Login
+      </a>
+      <a href="/#contact" class="mobile-link w-full inline-flex items-center justify-center gap-2 bg-accent-500 hover:bg-accent-400 text-slate-950 text-sm font-semibold px-5 py-3 rounded-lg shadow-sm transition">
+        Become a Distributor
+      </a>
+    </div>
+  </div>
+</div>
+
+<main>
+
+  <!-- ============================================================
+       HOME CARE HERO CAROUSEL
+       Hidden by default — JS shows it only when slides exist.
+       ============================================================ -->
+  <section id="hc-hero" class="relative bg-slate-950 hidden">
+    <div id="hcCarousel" class="relative h-[520px] sm:h-[560px] lg:h-[620px] overflow-hidden"></div>
+    <button id="hcPrevBtn"
+      class="absolute left-3 sm:left-6 top-1/2 -translate-y-1/2 z-20 w-11 h-11 rounded-full bg-white/15 hover:bg-white/30 backdrop-blur-md text-white border border-white/20 flex items-center justify-center transition focus-ring"
+      aria-label="Previous slide">
+      <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+    </button>
+    <button id="hcNextBtn"
+      class="absolute right-3 sm:right-6 top-1/2 -translate-y-1/2 z-20 w-11 h-11 rounded-full bg-white/15 hover:bg-white/30 backdrop-blur-md text-white border border-white/20 flex items-center justify-center transition focus-ring"
+      aria-label="Next slide">
+      <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+    </button>
+    <div id="hcDots" class="absolute bottom-5 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2"></div>
+  </section>
+
+  <!-- ============================================================
+       HOME CARE PRODUCTS
+       ============================================================ -->
+  <section id="hc-products" class="py-16 sm:py-20 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+      <div class="text-center max-w-2xl mx-auto mb-10">
+        <span class="inline-flex items-center gap-2 text-xs font-semibold text-accent-700 bg-accent-50 border border-accent-100 px-3 py-1 rounded-full">Home Care Catalog</span>
+        <h2 class="mt-3 text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-slate-900">Home Care Products</h2>
+        <p class="mt-3 text-slate-600">Household essentials crafted for modern trade. Pricing available to verified trade accounts.</p>
+      </div>
+
+      <!-- Search -->
+      <div class="max-w-3xl mx-auto mb-10">
+        <div class="relative">
+          <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+          <input id="hcSearchInput" type="text" placeholder="Search home care products"
+            class="w-full pl-12 pr-4 py-3.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-accent-500 focus:border-transparent transition"
+            aria-label="Search home care products" />
+          <button id="hcClearSearch" class="hidden absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 inline-flex items-center justify-center rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition" aria-label="Clear search">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+        <div id="hcCategoryPills" class="mt-5 flex flex-wrap justify-center gap-2 no-scrollbar"></div>
+      </div>
+
+      <!-- Grid -->
+      <div id="hcProductsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6"></div>
+
+      <!-- Empty state -->
+      <div id="hcEmptyState" class="hidden text-center py-16">
+        <div class="w-16 h-16 mx-auto rounded-full bg-slate-100 flex items-center justify-center mb-4">
+          <svg class="w-8 h-8 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/><path d="M8 11h6"/></svg>
+        </div>
+        <h3 class="text-lg font-semibold text-slate-900">No products found</h3>
+        <p class="mt-1 text-sm text-slate-500">Try a different search term or category.</p>
+        <button id="hcResetFilters" class="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-accent-700 hover:text-accent-800 transition">Reset filters</button>
+      </div>
+
+    </div>
+  </section>
+
+</main>
+
+<!-- ============================================================
+     FOOTER
+     ============================================================ -->
+<footer class="bg-slate-900 text-slate-300">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-8 lg:gap-12">
+
+      <div class="col-span-2 md:col-span-1">
+        <div class="flex items-center gap-3">
+          <img src="{% static 'images/logo.png' %}" alt="Aizah" class="h-16 w-auto max-h-16 object-contain" />
+          <div>
+            <div class="text-[10px] font-semibold uppercase tracking-[0.35em] text-cyan-200">FMCG Co.</div>
+            <div class="text-xs text-slate-400">Trusted trade partner</div>
+          </div>
+        </div>
+        <p class="mt-4 text-sm text-slate-400 leading-relaxed max-w-xs">Trusted manufacturer of chanachur, bottled water, and hygiene essentials for trade partners across the region.</p>
+        <div class="mt-5 flex items-center gap-2">
+          <a href="#" aria-label="Facebook"  class="w-9 h-9 rounded-lg bg-slate-800 hover:bg-brand-600 text-slate-300 hover:text-white flex items-center justify-center transition"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.07C24 5.41 18.63 0 12 0S0 5.41 0 12.07C0 18.1 4.39 23.1 10.13 24v-8.44H7.08v-3.49h3.05V9.41c0-3.02 1.79-4.69 4.53-4.69 1.31 0 2.69.24 2.69.24v2.97h-1.52c-1.49 0-1.96.93-1.96 1.89v2.25h3.33l-.53 3.49h-2.8V24C19.61 23.1 24 18.1 24 12.07Z"/></svg></a>
+          <a href="#" aria-label="LinkedIn"  class="w-9 h-9 rounded-lg bg-slate-800 hover:bg-brand-600 text-slate-300 hover:text-white flex items-center justify-center transition"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M20.45 20.45h-3.55v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.13 1.45-2.13 2.94v5.67H9.36V9h3.41v1.56h.05c.47-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28ZM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13ZM7.12 20.45H3.56V9h3.56v11.45ZM22.22 0H1.77C.8 0 0 .78 0 1.74v20.5C0 23.22.8 24 1.77 24h20.45c.98 0 1.78-.78 1.78-1.76V1.74C24 .78 23.2 0 22.22 0Z"/></svg></a>
+          <a href="#" aria-label="Instagram" class="w-9 h-9 rounded-lg bg-slate-800 hover:bg-brand-600 text-slate-300 hover:text-white flex items-center justify-center transition"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.16c3.2 0 3.58.01 4.85.07 1.17.05 1.8.25 2.23.41.56.22.96.48 1.38.9.42.42.68.82.9 1.38.16.42.36 1.06.41 2.23.06 1.27.07 1.65.07 4.85s-.01 3.58-.07 4.85c-.05 1.17-.25 1.8-.41 2.23-.22.56-.48.96-.9 1.38-.42.42-.82.68-1.38.9-.42.16-1.06.36-2.23.41-1.27.06-1.65.07-4.85.07s-3.58-.01-4.85-.07c-1.17-.05-1.8-.25-2.23-.41-.56-.22-.96-.48-1.38-.9-.42-.42-.68-.82-.9-1.38-.16-.42-.36-1.06-.41-2.23-.06-1.27-.07-1.65-.07-4.85s.01-3.58.07-4.85c.05-1.17.25-1.8.41-2.23.22-.56.48-.96.9-1.38.42-.42.82-.68 1.38-.9.42-.16 1.06-.36 2.23-.41 1.27-.06 1.65-.07 4.85-.07ZM12 0C8.74 0 8.33.01 7.05.07 5.78.13 4.9.33 4.14.63c-.79.31-1.46.72-2.12 1.38C1.35 2.67.94 3.34.63 4.14.33 4.9.13 5.78.07 7.05.01 8.33 0 8.74 0 12s.01 3.67.07 4.95c.06 1.27.26 2.15.56 2.91.31.79.72 1.46 1.38 2.12.66.66 1.33 1.07 2.12 1.38.76.3 1.64.5 2.91.56C8.33 23.99 8.74 24 12 24s3.67-.01 4.95-.07c1.27-.06 2.15-.26 2.91-.56.79-.31 1.46-.72 2.12-1.38.66-.66 1.07-1.33 1.38-2.12.3-.76.5-1.64.56-2.91.06-1.28.07-1.69.07-4.95s-.01-3.67-.07-4.95c-.06-1.27-.26-2.15-.56-2.91-.31-.79-.72-1.46-1.38-2.12C21.33 1.35 20.66.94 19.86.63 19.1.33 18.22.13 16.95.07 15.67.01 15.26 0 12 0Zm0 5.84A6.16 6.16 0 1 0 18.16 12 6.16 6.16 0 0 0 12 5.84Zm0 10.16A4 4 0 1 1 16 12a4 4 0 0 1-4 4Zm6.41-11.85a1.44 1.44 0 1 0 1.44 1.44 1.44 1.44 0 0 0-1.44-1.44Z"/></svg></a>
+          <a href="#" aria-label="YouTube"   class="w-9 h-9 rounded-lg bg-slate-800 hover:bg-brand-600 text-slate-300 hover:text-white flex items-center justify-center transition"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M23.5 6.2a3 3 0 0 0-2.12-2.13C19.5 3.55 12 3.55 12 3.55s-7.5 0-9.38.52A3 3 0 0 0 .5 6.2 31.4 31.4 0 0 0 0 12a31.4 31.4 0 0 0 .5 5.8 3 3 0 0 0 2.12 2.13c1.88.52 9.38.52 9.38.52s7.5 0 9.38-.52a3 3 0 0 0 2.12-2.13A31.4 31.4 0 0 0 24 12a31.4 31.4 0 0 0-.5-5.8ZM9.55 15.57V8.43L15.82 12Z"/></svg></a>
+        </div>
+      </div>
+
+      <div>
+        <h4 class="text-sm font-bold text-white mb-4">Company</h4>
+        <ul class="space-y-2.5 text-sm">
+          <li><a href="/"                         class="text-slate-400 hover:text-brand-400 transition">Home</a></li>
+          <li><a href="/#products"                class="text-slate-400 hover:text-brand-400 transition">Food Products</a></li>
+          <li><a href="{% url 'core:homecare' %}" class="text-brand-400 transition">Home Care</a></li>
+          <li><a href="/#about"                   class="text-slate-400 hover:text-brand-400 transition">About Us</a></li>
+          <li><a href="/#contact"                 class="text-slate-400 hover:text-brand-400 transition">Contact</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h4 class="text-sm font-bold text-white mb-4">Home Care</h4>
+        <ul id="footerHCCategories" class="space-y-2.5 text-sm">
+          <!-- filled by JS from homecareProducts data -->
+        </ul>
+      </div>
+
+      <div>
+        <h4 class="text-sm font-bold text-white mb-4">Get in Touch</h4>
+        <ul class="space-y-2.5 text-sm">
+          <li><a href="mailto:{{ contact.email|default:'trade@aizah-fmcg.com' }}" class="text-slate-400 hover:text-brand-400 transition">{{ contact.email|default:"trade@aizah-fmcg.com" }}</a></li>
+          <li><a href="tel:{{ contact.phone|default:'+8801700000000' }}"           class="text-slate-400 hover:text-brand-400 transition">{{ contact.phone|default:"+880 1700-000000" }}</a></li>
+          <li class="text-slate-400 leading-relaxed">{{ contact.address|default:"Plot 14, Industrial Zone, Tongi, Gazipur 1710" }}</li>
+        </ul>
+      </div>
+
+    </div>
+
+    <div class="mt-12 pt-6 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3">
+      <p class="text-xs text-slate-500">&copy; <span id="year"></span> {{ brand_full_name }} All rights reserved.</p>
+      <div class="flex items-center gap-5 text-xs text-slate-500">
+        <a href="#" class="hover:text-slate-300 transition">Privacy Policy</a>
+        <a href="#" class="hover:text-slate-300 transition">Terms of Trade</a>
+        <a href="#" class="hover:text-slate-300 transition">Quality Policy</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- ============================================================
+     PRODUCT MODAL  (identical to home.html)
+     ============================================================ -->
+<div id="productModal" class="fixed inset-0 z-[60] hidden" aria-modal="true" role="dialog" aria-labelledby="modalTitle">
+  <div id="modalBackdrop" class="modal-backdrop absolute inset-0 bg-slate-900/60 backdrop-blur-sm opacity-0"></div>
+  <div class="absolute inset-0 flex items-center justify-center p-4 sm:p-6">
+    <div id="modalPanel" class="modal-panel relative bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden opacity-0 translate-y-4">
+      <button id="modalClose" class="absolute top-4 right-4 z-10 w-9 h-9 inline-flex items-center justify-center rounded-full bg-white/90 hover:bg-white text-slate-700 shadow-md border border-slate-200 transition focus-ring" aria-label="Close product details">
+        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+      <div class="grid md:grid-cols-2 max-h-[90vh] overflow-y-auto">
+        <div class="relative bg-slate-100 aspect-square md:aspect-auto md:min-h-[460px] select-none">
+          <img id="modalImage" src="" alt="" class="absolute inset-0 w-full h-full object-cover transition-opacity duration-300" />
+          <button id="modalImgPrev" class="hidden absolute left-2 top-1/2 -translate-y-1/2 z-10 w-9 h-9 rounded-full bg-black/40 hover:bg-black/60 text-white flex items-center justify-center transition focus-ring" aria-label="Previous image">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+          </button>
+          <button id="modalImgNext" class="hidden absolute right-2 top-1/2 -translate-y-1/2 z-10 w-9 h-9 rounded-full bg-black/40 hover:bg-black/60 text-white flex items-center justify-center transition focus-ring" aria-label="Next image">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+          </button>
+          <div id="modalImgDots" class="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-1.5 z-10"></div>
+        </div>
+        <div class="p-6 sm:p-8">
+          <div id="modalCategory" class="inline-flex items-center gap-1.5 text-xs font-semibold text-brand-700 bg-brand-50 border border-brand-100 px-2.5 py-1 rounded-full"></div>
+          <h3 id="modalTitle" class="mt-3 text-xl sm:text-2xl font-extrabold tracking-tight text-slate-900"></h3>
+          <p id="modalDesc" class="mt-3 text-sm text-slate-600 leading-relaxed"></p>
+          <div class="mt-6">
+            <h4 class="text-xs font-bold text-slate-900 uppercase tracking-wider mb-3">Specifications &amp; Packaging</h4>
+            <dl id="modalSpecs" class="space-y-2.5"></dl>
+          </div>
+          <div class="mt-7 flex flex-col sm:flex-row gap-3">
+            <a href="/#contact" id="modalInquire" class="flex-1 inline-flex items-center justify-center gap-2 bg-brand-600 hover:bg-brand-700 text-white text-sm font-semibold px-5 py-3 rounded-lg shadow-sm transition focus-ring">
+              Request Trade Quote
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+            </a>
+            <a href="mailto:{{ contact.email|default:'trade@aizah-fmcg.com' }}" class="flex-1 inline-flex items-center justify-center gap-2 bg-white hover:bg-slate-50 text-slate-800 text-sm font-semibold px-5 py-3 rounded-lg border border-slate-200 shadow-sm transition focus-ring">
+              Email Sales
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Back to top -->
+<button id="backToTop" class="fixed bottom-6 right-6 z-30 w-11 h-11 rounded-full bg-slate-900 hover:bg-brand-600 text-white shadow-lg flex items-center justify-center transition opacity-0 invisible" aria-label="Back to top">
+  <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>
+</button>
+
+<script>
+/* ============================================================
+   HOME CARE PAGE — JavaScript
+   Reuses the same Carousel class, openModal, and product grid
+   patterns as home.html. Data comes from Django context as JSON.
+   ============================================================ */
+(function () {
+  'use strict';
+
+  /* ── 1. DATA ──────────────────────────────────────────────── */
+  var hcCarouselSlides  = {{ hc_carousel_slides_json|safe }};
+  var homecareProducts  = {{ homecare_products_json|safe }};
+  var hcCategories      = {{ homecare_categories_json|safe }};
+
+  /* ── 2. UTILITIES ─────────────────────────────────────────── */
+  var $ = function (sel, ctx) { return (ctx || document).querySelector(sel); };
+  var $$ = function (sel, ctx) { return Array.from((ctx || document).querySelectorAll(sel)); };
+
+  function debounce(fn, wait) {
+    var t;
+    return function () {
+      var args = arguments, self = this;
+      clearTimeout(t);
+      t = setTimeout(function () { fn.apply(self, args); }, wait || 300);
+    };
+  }
+
+  function escapeHtml(str) {
+    if (str == null) return '';
+    return String(str).replace(/[&<>"']/g, function (c) {
+      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+    });
+  }
+
+  /* ── 3. REUSABLE CAROUSEL CLASS (identical to home.html) ─── */
+  function Carousel(opts) {
+    this.container   = opts.container;
+    this.dotsEl      = opts.dotsEl;
+    this.prevBtn     = opts.prevBtn;
+    this.nextBtn     = opts.nextBtn;
+    this.slides      = opts.slides || [];
+    this.renderSlide = opts.renderSlide;
+    this.renderDot   = opts.renderDot || this._defaultDot.bind(this);
+    this.interval    = opts.interval  || 5000;
+    this.slideClass  = opts.slideClass  || 'carousel-slide';
+    this.activeClass = opts.activeClass || 'active';
+    this._index  = 0;
+    this._timer  = null;
+    this._paused = false;
+    if (this.slides.length) this._build();
+  }
+
+  Carousel.prototype._defaultDot = function (i, isActive) {
+    return '<button class="carousel-dot focus-ring rounded-full transition-all duration-300 ' +
+      (isActive ? 'w-8 h-2.5 bg-white' : 'w-2.5 h-2.5 bg-white/40 hover:bg-white/70') +
+      '" data-index="' + i + '" aria-label="Go to slide ' + (i + 1) + '"></button>';
+  };
+
+  Carousel.prototype._build = function () {
+    var self = this;
+    this.container.innerHTML = this.slides.map(function (s, i) { return self.renderSlide(s, i, i === 0); }).join('');
+    if (this.dotsEl) {
+      this.dotsEl.innerHTML = this.slides.map(function (_, i) { return self.renderDot(i, i === 0); }).join('');
+      $$('[data-index]', this.dotsEl).forEach(function (dot) {
+        dot.addEventListener('click', function () { self.goTo(parseInt(dot.dataset.index, 10)); self._restartAutoplay(); });
+      });
+    }
+    if (this.prevBtn) this.prevBtn.addEventListener('click', function () { self.prev(); self._restartAutoplay(); });
+    if (this.nextBtn) this.nextBtn.addEventListener('click', function () { self.next(); self._restartAutoplay(); });
+    this.container.addEventListener('mouseenter', function () { self._paused = true; });
+    this.container.addEventListener('mouseleave', function () { self._paused = false; });
+    var tx = null;
+    this.container.addEventListener('touchstart', function (e) { tx = e.changedTouches[0].clientX; }, { passive: true });
+    this.container.addEventListener('touchend',   function (e) {
+      if (tx === null) return;
+      var dx = e.changedTouches[0].clientX - tx; tx = null;
+      if (Math.abs(dx) < 40) return;
+      if (dx < 0) self.next(); else self.prev();
+      self._restartAutoplay();
+    }, { passive: true });
+    document.addEventListener('visibilitychange', function () { self._paused = document.hidden; });
+    this.startAutoplay();
+  };
+
+  Carousel.prototype._slideEls = function () { return $$('.' + this.slideClass, this.container); };
+  Carousel.prototype._dotEls   = function () { return this.dotsEl ? $$('[data-index]', this.dotsEl) : []; };
+
+  Carousel.prototype.goTo = function (index) {
+    var slides = this._slideEls(), dots = this._dotEls();
+    if (!slides.length) return;
+    var next = ((index % slides.length) + slides.length) % slides.length;
+    var prev = this._index;
+    slides[prev].classList.remove(this.activeClass);
+    this._updateDotInactive(dots[prev]);
+    this._index = next;
+    slides[next].classList.add(this.activeClass);
+    this._updateDotActive(dots[next]);
+    this._onSlideChange(prev, next);
+  };
+
+  Carousel.prototype._onSlideChange   = function () {};
+  Carousel.prototype._updateDotActive = function (dot) {
+    if (!dot) return;
+    dot.className = 'carousel-dot focus-ring rounded-full transition-all duration-300 w-8 h-2.5 bg-white';
+  };
+  Carousel.prototype._updateDotInactive = function (dot) {
+    if (!dot) return;
+    dot.className = 'carousel-dot focus-ring rounded-full transition-all duration-300 w-2.5 h-2.5 bg-white/40 hover:bg-white/70';
+  };
+  Carousel.prototype.next  = function () { this.goTo(this._index + 1); };
+  Carousel.prototype.prev  = function () { this.goTo(this._index - 1); };
+  Carousel.prototype.pause  = function () { this._paused = true; };
+  Carousel.prototype.resume = function () { this._paused = false; };
+  Carousel.prototype.startAutoplay = function () {
+    this.stopAutoplay();
+    var self = this;
+    this._timer = setInterval(function () { if (!self._paused) self.next(); }, this.interval);
+  };
+  Carousel.prototype.stopAutoplay    = function () { if (this._timer) { clearInterval(this._timer); this._timer = null; } };
+  Carousel.prototype._restartAutoplay = function () { this.stopAutoplay(); this.startAutoplay(); };
+
+  /* ── 4. STATE ─────────────────────────────────────────────── */
+  var state = { hcCategory: 'All', hcSearch: '', hcCarousel: null };
+
+  /* ── 5. NAVBAR / MOBILE MENU ─────────────────────────────── */
+  function initNavbar() {
+    var menuToggle = $('#menuToggle'), menuClose = $('#menuClose');
+    var menu = $('#mobileMenu'), backdrop = $('#menuBackdrop'), panel = $('#menuPanel');
+    var iconOpen = $('#menuIconOpen'), iconClose = $('#menuIconClose');
+
+    function openMenu() {
+      menu.classList.remove('hidden');
+      iconOpen.classList.add('hidden'); iconClose.classList.remove('hidden');
+      menuToggle.setAttribute('aria-expanded', 'true');
+      requestAnimationFrame(function () { backdrop.style.opacity = '1'; panel.style.transform = 'translateX(0)'; });
+      document.body.classList.add('scroll-lock');
+    }
+    function closeMenu() {
+      backdrop.style.opacity = '0'; panel.style.transform = 'translateX(100%)';
+      iconOpen.classList.remove('hidden'); iconClose.classList.add('hidden');
+      menuToggle.setAttribute('aria-expanded', 'false');
+      setTimeout(function () { menu.classList.add('hidden'); document.body.classList.remove('scroll-lock'); }, 320);
+    }
+
+    menuToggle.addEventListener('click', openMenu);
+    menuClose.addEventListener('click', closeMenu);
+    backdrop.addEventListener('click', closeMenu);
+    $$('.mobile-link').forEach(function (l) { l.addEventListener('click', closeMenu); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !menu.classList.contains('hidden')) closeMenu(); });
+
+    var navbar = $('#navbar');
+    window.addEventListener('scroll', function () {
+      if (window.scrollY > 8) navbar.classList.add('shadow-sm'); else navbar.classList.remove('shadow-sm');
+    }, { passive: true });
+
+    /* Products dropdown click-toggle */
+    var dropBtn = $('#productsDropBtn'), dropPanel = $('#productsDropPanel');
+    if (dropBtn && dropPanel) {
+      dropBtn.addEventListener('click', function () {
+        var open = dropPanel.classList.contains('opacity-100');
+        if (open) { dropPanel.classList.remove('opacity-100','visible'); dropPanel.classList.add('opacity-0','invisible'); dropBtn.setAttribute('aria-expanded','false'); }
+        else       { dropPanel.classList.add('opacity-100','visible'); dropPanel.classList.remove('opacity-0','invisible'); dropBtn.setAttribute('aria-expanded','true'); }
+      });
+      document.addEventListener('click', function (e) {
+        if (!dropBtn.contains(e.target) && !dropPanel.contains(e.target)) {
+          dropPanel.classList.remove('opacity-100','visible'); dropPanel.classList.add('opacity-0','invisible'); dropBtn.setAttribute('aria-expanded','false');
+        }
+      });
+    }
+
+    /* Mobile accordion */
+    var mobBtn = $('#mobileProductsBtn'), mobMenu = $('#mobileProductsMenu'), mobChevron = $('#mobileProductsChevron');
+    if (mobBtn && mobMenu) {
+      mobBtn.addEventListener('click', function () {
+        var open = !mobMenu.classList.contains('hidden');
+        if (open) { mobMenu.classList.add('hidden'); mobChevron.style.transform = ''; mobBtn.setAttribute('aria-expanded','false'); }
+        else       { mobMenu.classList.remove('hidden'); mobChevron.style.transform = 'rotate(180deg)'; mobBtn.setAttribute('aria-expanded','true'); }
+      });
+    }
+  }
+
+  /* ── 6. HERO CAROUSEL ─────────────────────────────────────── */
+  function buildHeroSlide(slide, i, isActive) {
+    var fit  = slide.media_fit === 'contain' ? 'contain' : 'cover';
+    var diag = { missing_url: { label: 'Slide has no media URL', hint: 'Add an image or video in the HomeCare Carousel Ads admin.' }, missing_file: { label: 'Media file not found', hint: 'Re-upload the asset in the HomeCare Carousel Ads admin.' } }[slide.media_status];
+
+    if (diag) {
+      return '<div class="carousel-slide' + (isActive ? ' active' : '') + '" data-index="' + i + '">' +
+        '<div class="absolute inset-0 bg-slate-950"></div>' +
+        '<div class="absolute inset-0 hero-overlay"></div>' +
+        '<div class="relative h-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center">' +
+          '<div class="max-w-2xl text-white">' +
+            '<span class="inline-flex items-center gap-2 text-xs font-semibold text-amber-200 bg-amber-500/15 border border-amber-400/30 px-3 py-1 rounded-full">Slide ' + (i+1) + ' &middot; Issue</span>' +
+            '<h1 class="mt-4 text-2xl font-extrabold">' + escapeHtml(diag.label) + '</h1>' +
+            '<p class="mt-3 text-sm text-slate-300">' + escapeHtml(diag.hint) + '</p>' +
+          '</div>' +
+        '</div>' +
+      '</div>';
+    }
+
+    var mediaSrc = slide.media_url || slide.image;
+    var isVideo  = slide.media_type === 'video';
+    var blurBg   = (!isVideo && fit === 'contain') ? '<div class="carousel-media-bg" style="background-image:url(\'' + escapeHtml(mediaSrc) + '\');"></div>' : '';
+    var mediaEl  = isVideo
+      ? '<video class="carousel-media carousel-video fit-' + fit + '" src="' + escapeHtml(mediaSrc) + '" ' + (isActive ? 'autoplay' : '') + ' muted loop playsinline preload="' + (isActive ? 'auto' : 'metadata') + '"></video>'
+      : '<img src="' + escapeHtml(mediaSrc) + '" alt="' + escapeHtml(slide.title || 'Home Care') + '" class="carousel-media fit-' + fit + '" loading="' + (isActive ? 'eager' : 'lazy') + '" />';
+
+    return '<div class="carousel-slide' + (isActive ? ' active' : '') + '" data-index="' + i + '">' +
+      blurBg + mediaEl +
+      '<div class="absolute inset-0 hero-overlay' + (fit === 'contain' ? ' is-light' : '') + '"></div>' +
+      '<div class="relative h-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center">' +
+        '<div class="max-w-2xl text-white">' +
+          (slide.tag    ? '<span class="inline-flex items-center gap-2 text-xs font-semibold text-white/90 bg-white/10 border border-white/20 px-3 py-1 rounded-full backdrop-blur-sm">' + escapeHtml(slide.tag) + '</span>' : '') +
+          (slide.title  ? '<h1 class="mt-4 text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight leading-tight">' + escapeHtml(slide.title) + '</h1>' : '') +
+          (slide.subtitle ? '<p class="mt-4 text-sm sm:text-base text-slate-200 max-w-xl leading-relaxed">' + escapeHtml(slide.subtitle) + '</p>' : '') +
+          '<div class="mt-7 flex flex-wrap gap-3">' +
+            '<a href="' + escapeHtml(slide.href || '#hc-products') + '" class="inline-flex items-center gap-2 bg-accent-500 hover:bg-accent-400 text-slate-950 text-sm font-semibold px-5 py-3 rounded-lg shadow-lg transition focus-ring">' +
+              escapeHtml(slide.cta || 'Explore') +
+              '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>' +
+            '</a>' +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+  }
+
+  function initHeroCarousel() {
+    if (!hcCarouselSlides.length) return;   /* render nothing when no slides */
+
+    var section = $('#hc-hero');
+    section.classList.remove('hidden');     /* show the section now we know slides exist */
+
+    var hcCarousel = new Carousel({
+      container:   $('#hcCarousel'),
+      dotsEl:      $('#hcDots'),
+      prevBtn:     $('#hcPrevBtn'),
+      nextBtn:     $('#hcNextBtn'),
+      slides:      hcCarouselSlides,
+      renderSlide: buildHeroSlide,
+      interval:    5000,
+      slideClass:  'carousel-slide',
+      activeClass: 'active',
+    });
+
+    /* Video play/pause on slide change */
+    hcCarousel._onSlideChange = function (prev, next) {
+      var slides = $$('.carousel-slide', $('#hcCarousel'));
+      function setPlay(idx, play) {
+        var s = slides[idx]; if (!s) return;
+        var v = s.querySelector('video'); if (!v) return;
+        if (play) { var p = v.play(); if (p && p.catch) p.catch(function(){}); } else v.pause();
+      }
+      setPlay(prev, false); setPlay(next, true);
+    };
+
+    /* Start first video */
+    var firstSlide = $$('.carousel-slide', $('#hcCarousel'))[0];
+    if (firstSlide) {
+      var v = firstSlide.querySelector('video');
+      if (v) { var p = v.play(); if (p && p.catch) p.catch(function(){}); }
+    }
+
+    /* Error fallback for videos */
+    $$('.carousel-video', $('#hcCarousel')).forEach(function (video) {
+      video.addEventListener('error', function () {
+        video.classList.add('has-error');
+        var fb = document.createElement('div');
+        fb.className = 'absolute inset-0 bg-slate-950';
+        fb.setAttribute('aria-hidden', 'true');
+        if (video.parentNode) video.parentNode.insertBefore(fb, video);
+      });
+    });
+
+    state.hcCarousel = hcCarousel;
+  }
+
+  /* ── 7. PRODUCT GRID ──────────────────────────────────────── */
+  function getHCCats() {
+    return ['All'].concat(Array.from(new Set(homecareProducts.map(function (p) { return p.category; }))));
+  }
+
+  function renderHCPills() {
+    var wrap = $('#hcCategoryPills'); if (!wrap) return;
+    wrap.innerHTML = getHCCats().map(function (c) {
+      var active = c === state.hcCategory;
+      return '<button data-hccat="' + escapeHtml(c) + '" class="hc-pill focus-ring text-sm font-semibold px-4 py-2 rounded-full border transition ' +
+        (active ? 'bg-accent-500 text-white border-accent-500 shadow-sm' : 'bg-white text-slate-700 border-slate-200 hover:border-accent-400 hover:text-accent-700') + '">' +
+        escapeHtml(c) + '</button>';
+    }).join('');
+    $$('.hc-pill', wrap).forEach(function (btn) {
+      btn.addEventListener('click', function () { state.hcCategory = btn.dataset.hccat; renderHCPills(); renderHCGrid(); });
+    });
+  }
+
+  function filterHC() {
+    var term = state.hcSearch.trim().toLowerCase();
+    return homecareProducts.filter(function (p) {
+      return (state.hcCategory === 'All' || p.category === state.hcCategory) &&
+             (!term || p.name.toLowerCase().includes(term) || p.category.toLowerCase().includes(term));
+    });
+  }
+
+  function renderHCGrid() {
+    var grid = $('#hcProductsGrid'), empty = $('#hcEmptyState'); if (!grid) return;
+    var list = filterHC();
+    if (!list.length) { grid.innerHTML = ''; grid.classList.add('hidden'); if (empty) empty.classList.remove('hidden'); return; }
+    if (empty) empty.classList.add('hidden');
+    grid.classList.remove('hidden');
+    grid.innerHTML = list.map(function (p, i) {
+      return '<article class="hc-product-card group bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-card hover:shadow-card-hover hover:-translate-y-1 transition-all duration-300 cursor-pointer fade-up" ' +
+        'data-id="' + escapeHtml(p.id) + '" style="animation-delay:' + ((i%8)*60) + 'ms" tabindex="0" role="button" aria-label="View details for ' + escapeHtml(p.name) + '">' +
+        '<div class="relative aspect-square overflow-hidden bg-slate-100">' +
+          '<img src="' + escapeHtml(p.image) + '" alt="' + escapeHtml(p.name) + '" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />' +
+          '<div class="absolute top-3 left-3"><span class="inline-flex items-center text-[11px] font-semibold text-slate-700 bg-white/90 backdrop-blur-sm border border-slate-200 px-2.5 py-1 rounded-full shadow-sm">' + escapeHtml(p.category) + '</span></div>' +
+        '</div>' +
+        '<div class="p-4 sm:p-5">' +
+          '<h3 class="font-bold text-slate-900 text-sm sm:text-base leading-snug line-clamp-2 min-h-[2.5rem]">' + escapeHtml(p.name) + '</h3>' +
+          '<p class="mt-1.5 text-xs text-slate-500 line-clamp-2">' + escapeHtml(p.description) + '</p>' +
+          '<div class="mt-4 flex items-center justify-between">' +
+            '<span class="text-xs font-medium text-slate-400">B2B Catalog</span>' +
+            '<span class="inline-flex items-center gap-1 text-xs font-semibold text-accent-700 group-hover:gap-2 transition-all">View Details <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span>' +
+          '</div>' +
+        '</div>' +
+      '</article>';
+    }).join('');
+    $$('.hc-product-card', grid).forEach(function (card) {
+      var id = card.dataset.id;
+      card.addEventListener('click', function () { openModal(id); });
+      card.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openModal(id); } });
+    });
+  }
+
+  function initHCSearch() {
+    var input = $('#hcSearchInput'), clear = $('#hcClearSearch'), reset = $('#hcResetFilters');
+    if (!input) return;
+    var handleInput = debounce(function (v) { state.hcSearch = v; renderHCGrid(); if (clear) clear.classList.toggle('hidden', !v); }, 280);
+    input.addEventListener('input', function (e) { handleInput(e.target.value); });
+    if (clear) clear.addEventListener('click', function () { input.value = ''; state.hcSearch = ''; clear.classList.add('hidden'); renderHCGrid(); input.focus(); });
+    if (reset) reset.addEventListener('click', function () { input.value = ''; state.hcSearch = ''; state.hcCategory = 'All'; if (clear) clear.classList.add('hidden'); renderHCPills(); renderHCGrid(); });
+  }
+
+  /* ── 8. FOOTER CATEGORIES ─────────────────────────────────── */
+  function renderFooterCategories() {
+    var ul = $('#footerHCCategories'); if (!ul) return;
+    var cats = Array.from(new Set(homecareProducts.map(function (p) { return p.category; }))).sort();
+    ul.innerHTML = cats.map(function (c) {
+      return '<li><a href="#hc-products" class="text-slate-400 hover:text-brand-400 transition">' + escapeHtml(c) + '</a></li>';
+    }).join('');
+  }
+
+  /* ── 9. PRODUCT MODAL (with multi-image gallery) ──────────── */
+  var _modalImages = [], _modalImgIdx = 0;
+
+  function _setModalImg(idx) {
+    var img  = $('#modalImage'), prev = $('#modalImgPrev'), next = $('#modalImgNext');
+    var dots = $$('[data-modal-dot]'), total = _modalImages.length;
+    if (!total) return;
+    _modalImgIdx = ((idx % total) + total) % total;
+    img.style.opacity = '0';
+    setTimeout(function () { img.src = _modalImages[_modalImgIdx]; img.style.opacity = '1'; }, 150);
+    if (total > 1) { prev.classList.remove('hidden'); next.classList.remove('hidden'); }
+    else           { prev.classList.add('hidden');    next.classList.add('hidden');    }
+    dots.forEach(function (d, i) {
+      d.className = 'w-2 h-2 rounded-full transition-all duration-200 ' + (i === _modalImgIdx ? 'bg-white' : 'bg-white/40 hover:bg-white/70');
+    });
+  }
+
+  function openModal(id) {
+    var product = homecareProducts.find(function (p) { return p.id === id; });
+    if (!product) return;
+    _modalImages = (product.images && product.images.length) ? product.images.filter(function (u) { return u; }) : (product.image ? [product.image] : []);
+    _modalImgIdx = 0;
+    var modal = $('#productModal'), backdrop = $('#modalBackdrop'), panel = $('#modalPanel'), dotsEl = $('#modalImgDots');
+    $('#modalCategory').textContent = product.category;
+    $('#modalTitle').textContent    = product.name;
+    $('#modalDesc').textContent     = product.description;
+    dotsEl.innerHTML = _modalImages.map(function (_, i) {
+      return '<button data-modal-dot="' + i + '" class="w-2 h-2 rounded-full transition-all duration-200 ' + (i === 0 ? 'bg-white' : 'bg-white/40 hover:bg-white/70') + '" aria-label="Image ' + (i+1) + '"></button>';
+    }).join('');
+    $$('[data-modal-dot]', dotsEl).forEach(function (dot) {
+      dot.addEventListener('click', function () { _setModalImg(parseInt(dot.dataset.modalDot, 10)); });
+    });
+    var img = $('#modalImage');
+    img.src = _modalImages[0] || ''; img.alt = product.name; img.style.opacity = '1';
+    var prev = $('#modalImgPrev'), next = $('#modalImgNext');
+    if (_modalImages.length > 1) { prev.classList.remove('hidden'); next.classList.remove('hidden'); }
+    else                          { prev.classList.add('hidden');    next.classList.add('hidden');    }
+    var specsList = $('#modalSpecs');
+    specsList.innerHTML = Object.entries(product.specifications || {}).map(function (e) {
+      return '<div class="flex items-start justify-between gap-4 py-2 border-b border-slate-100 last:border-b-0">' +
+        '<dt class="text-xs font-semibold text-slate-500 uppercase tracking-wider shrink-0">' + escapeHtml(e[0]) + '</dt>' +
+        '<dd class="text-sm font-medium text-slate-900 text-right">' + escapeHtml(e[1]) + '</dd>' +
+      '</div>';
+    }).join('');
+    modal.classList.remove('hidden'); document.body.classList.add('scroll-lock');
+    requestAnimationFrame(function () { backdrop.style.opacity = '1'; panel.style.opacity = '1'; panel.style.transform = 'translateY(0)'; });
+    setTimeout(function () { $('#modalClose').focus(); }, 100);
+    if (state.hcCarousel) state.hcCarousel.pause();
+  }
+
+  function closeModal() {
+    var modal = $('#productModal'), backdrop = $('#modalBackdrop'), panel = $('#modalPanel');
+    backdrop.style.opacity = '0'; panel.style.opacity = '0'; panel.style.transform = 'translateY(16px)';
+    setTimeout(function () {
+      modal.classList.add('hidden'); document.body.classList.remove('scroll-lock');
+      if (state.hcCarousel) state.hcCarousel.resume();
+    }, 280);
+  }
+
+  function initModal() {
+    var modal = $('#productModal');
+    $('#modalClose').addEventListener('click', closeModal);
+    $('#modalBackdrop').addEventListener('click', closeModal);
+    $('#modalInquire').addEventListener('click', closeModal);
+    document.addEventListener('keydown', function (e) {
+      if (modal.classList.contains('hidden')) return;
+      if (e.key === 'Escape')     closeModal();
+      if (e.key === 'ArrowLeft')  _setModalImg(_modalImgIdx - 1);
+      if (e.key === 'ArrowRight') _setModalImg(_modalImgIdx + 1);
+    });
+    $('#modalImgPrev').addEventListener('click', function () { _setModalImg(_modalImgIdx - 1); });
+    $('#modalImgNext').addEventListener('click', function () { _setModalImg(_modalImgIdx + 1); });
+    var wrap = $('#modalImage').parentElement, tx2 = null;
+    wrap.addEventListener('touchstart', function (e) { tx2 = e.changedTouches[0].clientX; }, { passive: true });
+    wrap.addEventListener('touchend',   function (e) {
+      if (tx2 === null) return;
+      var dx = e.changedTouches[0].clientX - tx2; tx2 = null;
+      if (Math.abs(dx) < 40) return;
+      _setModalImg(dx < 0 ? _modalImgIdx + 1 : _modalImgIdx - 1);
+    }, { passive: true });
+  }
+
+  /* ── 10. BACK TO TOP ──────────────────────────────────────── */
+  function initBackToTop() {
+    var btn = $('#backToTop');
+    window.addEventListener('scroll', function () {
+      if (window.scrollY > 600) btn.classList.remove('opacity-0','invisible');
+      else btn.classList.add('opacity-0','invisible');
+    }, { passive: true });
+    btn.addEventListener('click', function () { window.scrollTo({ top: 0, behavior: 'smooth' }); });
+  }
+
+  /* ── 11. INIT ─────────────────────────────────────────────── */
+  function init() {
+    $('#year').textContent = new Date().getFullYear();
+    initNavbar();
+    initHeroCarousel();
+    renderHCPills();
+    renderHCGrid();
+    initHCSearch();
+    renderFooterCategories();
+    initModal();
+    initBackToTop();
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+  else init();
+
+}());
+</script>
+</body>
+</html>

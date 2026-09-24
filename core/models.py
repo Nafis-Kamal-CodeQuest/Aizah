@@ -318,6 +318,82 @@ class OrderItem(models.Model):
         return f'{self.product.name} × {self.quantity} (Order #{self.order_id})'
 
 
+class HomeCareCarouselAd(models.Model):
+    """Hero carousel slides for the dedicated /homecare/ page.
+
+    Completely independent from CarouselAd — different DB table, different
+    admin section, different upload folder. Slides here never appear on the
+    main homepage carousel and vice-versa.
+    """
+    MEDIA_TYPE_CHOICES = [
+        ('image', 'Image'),
+        ('video', 'Video'),
+    ]
+    MEDIA_FIT_CHOICES = [
+        ('cover', 'Cover — fill the hero, crop if needed (best for landscape)'),
+        ('contain', 'Contain — show the entire image with no crop (best for portrait)'),
+    ]
+
+    title = models.CharField(max_length=300, blank=True, default='')
+    subtitle = models.TextField(blank=True, default='')
+    cta_text = models.CharField(max_length=100, blank=True, default='Explore')
+    cta_href = models.CharField(max_length=200, blank=True, default='#products')
+    tag = models.CharField(max_length=100, blank=True, default='')
+    media_file = models.FileField(
+        upload_to='homecare-carousel-media/',
+        blank=True,
+        validators=[_validate_media_file],
+    )
+    external_image_url = models.URLField(blank=True)
+    media_type = models.CharField(max_length=5, choices=MEDIA_TYPE_CHOICES, default='image')
+    media_fit = models.CharField(
+        max_length=10,
+        choices=MEDIA_FIT_CHOICES,
+        default='cover',
+        help_text=(
+            'How the media fits inside the hero. "cover" for landscape '
+            '(full-bleed). "contain" for portrait (whole image visible).'
+        ),
+    )
+    order = models.PositiveIntegerField(default=0)
+    active = models.BooleanField(default=True)
+    start_date = models.DateField(null=True, blank=True)
+    end_date = models.DateField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['order']
+        verbose_name = 'Home Care Carousel Ad'
+        verbose_name_plural = 'Home Care Carousel Ads'
+
+    def image_url(self):
+        if self.external_image_url:
+            return self.external_image_url
+        if self.media_file:
+            return self.media_file.url
+        return ''
+
+    def media_url(self):
+        return self.image_url()
+
+    def resolved_media_type(self):
+        source_name = ''
+        if self.media_file:
+            source_name = self.media_file.name
+        elif self.external_image_url:
+            source_name = self.external_image_url
+        guessed_type, _ = guess_type(source_name)
+        if guessed_type:
+            return 'video' if guessed_type.startswith('video/') else 'image'
+        if source_name.lower().endswith(('.mp4', '.webm', '.mov', '.m4v', '.ogv')):
+            return 'video'
+        return self.media_type or 'image'
+
+    def __str__(self):
+        return f'HomeCare Carousel Ad #{self.pk} ({self.media_type})'
+
+
 class HomeCareCategory(models.Model):
     name = models.CharField(max_length=100)
     slug = models.SlugField(max_length=100, unique=True, blank=True)

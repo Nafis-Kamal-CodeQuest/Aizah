@@ -5,5 +5,6 @@ app_name = 'core'
 
 urlpatterns = [
     path('', views.home, name='home'),
+    path('homecare/', views.homecare, name='homecare'),
     path('api/inquiry/', views.submit_inquiry, name='submit_inquiry'),
 ]

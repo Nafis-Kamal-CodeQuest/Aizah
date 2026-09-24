@@ -11,8 +11,8 @@ from django.views.decorators.http import require_POST
 
 from .forms import ContactInquiryForm
 from .models import (
-    Category, Product, ProductImage, CarouselAd, DiscountAnnouncement,
-    CompanyInfo, ContactInfo,
+    Category, Product, ProductImage, CarouselAd, HomeCareCarouselAd,
+    DiscountAnnouncement, CompanyInfo, ContactInfo,
     HomeCareCategory, HomeCareProduct, HomeCareProductImage,
 )
 
@@ -123,30 +123,9 @@ def home(request):
         for p in products_qs
     ]
 
-    # Home Care products — separate list, same shape as food products
-    homecare_qs = HomeCareProduct.objects.select_related('category').prefetch_related('extra_images').all()
-    homecare_products = [
-        {
-            'id': 'hc-' + (p.sku or str(p.pk)),
-            'name': p.name,
-            'category': p.category.name,
-            'image': _product_image_url(p),
-            'images': (
-                [_product_image_url(p)] +
-                [request.build_absolute_uri(ei.image.url) if ei.image else ''
-                 for ei in p.extra_images.all()]
-            ) if _product_image_url(p) else
-                [request.build_absolute_uri(ei.image.url)
-                 for ei in p.extra_images.all() if ei.image],
-            'description': p.description,
-            'specifications': p.specifications or {},
-        }
-        for p in homecare_qs
-    ]
-
-    homecare_categories = list(
-        HomeCareCategory.objects.values('name', 'slug').order_by('name')
-    )
+    # Home Care products moved to the dedicated /homecare/ view.
+    # homecare_products_json and homecare_categories_json are no longer
+    # injected into home.html.
 
     carousel_qs = _active_scheduled(
         CarouselAd.objects.all(), active_field='active'
@@ -203,10 +182,8 @@ def home(request):
         'brand_full_name': brand_full_name,
         'carousel_slides_json': json.dumps(carousel_slides, ensure_ascii=False),
         'products_json': json.dumps(products, ensure_ascii=False),
-        'homecare_products_json': json.dumps(homecare_products, ensure_ascii=False),
         'offers_json': json.dumps(offers, ensure_ascii=False),
         'categories_json': json.dumps(categories, ensure_ascii=False),
-        'homecare_categories_json': json.dumps(homecare_categories, ensure_ascii=False),
         'categories': categories,
         'company': company,
         'contact': contact,
@@ -233,3 +210,106 @@ def submit_inquiry(request):
         })
     errors = {f: e[0] for f, e in form.errors.items()}
     return JsonResponse({'ok': False, 'errors': errors}, status=422)
+
+
+def _build_homecare_product(p, request):
+    """Shared helper — same JSON shape as food products."""
+    return {
+        'id': 'hc-' + (p.sku or str(p.pk)),
+        'name': p.name,
+        'category': p.category.name,
+        'image': _product_image_url(p),
+        'images': (
+            [_product_image_url(p)] +
+            [request.build_absolute_uri(ei.image.url)
+             for ei in p.extra_images.all() if ei.image]
+        ) if _product_image_url(p) else
+            [request.build_absolute_uri(ei.image.url)
+             for ei in p.extra_images.all() if ei.image],
+        'description': p.description,
+        'specifications': p.specifications or {},
+    }
+
+
+def homecare(request):
+    """Dedicated /homecare/ page.
+
+    Provides:
+    - HomeCareCarouselAd slides (separate model, never mixed with main hero).
+      If no active slides exist the JSON array is empty and the template
+      renders nothing for the carousel section.
+    - HomeCareProduct data (same JSON shape as food products on home page).
+    - Shared contact/company info for the footer.
+    """
+    brand_name      = 'Aizah'
+    brand_full_name = 'Aizah FMCG Co. Ltd.'
+
+    # ── HomeCare hero carousel ────────────────────────────────────────────
+    hc_carousel_qs = _active_scheduled(
+        HomeCareCarouselAd.objects.all(), active_field='active'
+    ).order_by('order')
+
+    def _build_hc_slide(s):
+        media_url    = s.media_url() or ''
+        media_type   = s.resolved_media_type()
+        media_exists = _media_file_exists(media_url) if media_url else False
+
+        if not media_url:
+            media_status = 'missing_url'
+        elif not media_exists:
+            media_status = 'missing_file'
+        else:
+            media_status = 'ok'
+
+        return {
+            'id':           s.pk,
+            'title':        s.title,
+            'subtitle':     s.subtitle,
+            'cta':          s.cta_text,
+            'href':         s.cta_href or '#hc-products',
+            'image':        media_url or PLACEHOLDER_IMAGE,
+            'media_url':    media_url,
+            'media_type':   media_type,
+            'media_fit':    s.media_fit,
+            'poster':       '',
+            'media_status': media_status,
+            'tag':          s.tag,
+        }
+
+    hc_carousel_slides = [_build_hc_slide(s) for s in hc_carousel_qs]
+
+    # ── HomeCare products ─────────────────────────────────────────────────
+    homecare_qs = (
+        HomeCareProduct.objects
+        .select_related('category')
+        .prefetch_related('extra_images')
+        .all()
+    )
+    homecare_products = [_build_homecare_product(p, request) for p in homecare_qs]
+
+    homecare_categories = list(
+        HomeCareCategory.objects.values('name', 'slug').order_by('name')
+    )
+
+    # ── Shared footer data ────────────────────────────────────────────────
+    try:
+        ci      = CompanyInfo.objects.get()
+        company = {'mission': ci.mission, 'vision': ci.vision, 'values': ci.values}
+    except CompanyInfo.DoesNotExist:
+        company = None
+
+    try:
+        cinfo   = ContactInfo.objects.get()
+        contact = {'email': cinfo.email, 'phone': cinfo.phone, 'address': cinfo.address}
+    except ContactInfo.DoesNotExist:
+        contact = None
+
+    return render(request, 'homecare.html', {
+        'brand_name':                brand_name,
+        'brand_full_name':           brand_full_name,
+        'hc_carousel_slides_json':   json.dumps(hc_carousel_slides,  ensure_ascii=False),
+        'homecare_products_json':    json.dumps(homecare_products,    ensure_ascii=False),
+        'homecare_categories_json':  json.dumps(homecare_categories,  ensure_ascii=False),
+        'company':                   company,
+        'contact':                   contact,
+    })

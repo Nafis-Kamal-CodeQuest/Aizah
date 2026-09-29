@@ -2,15 +2,12 @@
 <html lang="en">
 <head>
 <script>
-  /* Inline: add js-motion to <html> ONLY if JS runs AND user has no
-     reduced-motion preference. A 10-second safety timeout removes the
-     class if motion.js fails to initialise (clears itself on success). */
+  /* Inline motion gate — sets data-motion="1" on <html>.
+     motion.js also checks prefers-reduced-motion at runtime,
+     so this is belt-and-suspenders only. */
   (function(){
     if(window.matchMedia&&window.matchMedia('(prefers-reduced-motion:reduce)').matches)return;
     document.documentElement.setAttribute('data-motion','1');
-    window._aizahMotionSafetyTimer=setTimeout(function(){
-      document.documentElement.removeAttribute('data-motion');
-    },10000);
   }());
 </script>
 <meta charset="UTF-8" />
@@ -188,12 +185,6 @@
 </style>
 <!-- Phase 1 motion layer -->
 <link rel="stylesheet" href="{% static 'css/motion.css' %}" />
-<!-- GSAP 3.12.5 + ScrollTrigger — loaded synchronously so motion.js can depend on them -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-<!-- Lenis 1.1.13 smooth scroll -->
-<script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js"></script>
-<!-- motion.js deferred — runs after DOM ready, libs already loaded above -->
 </head>
 <body class="bg-[#f5fbfd] text-slate-900">
 
@@ -1804,7 +1795,13 @@
   }
 }());
 </script>
-<!-- Phase 1 motion — placed after all page JS so DOM + libs are ready -->
+<!-- Phase 1 motion: CDN libs + motion.js all at end of body, guaranteed sequential -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js"></script>
 <script src="{% static 'js/motion.js' %}"></script>
 </body>
 </html>
+
+
+

@@ -1,9 +1,6 @@
 /* =============================================================
    AIZAH FMCG - motion.js  (Phase 1)
    Depends on: GSAP 3.12.5, ScrollTrigger, Lenis 1.1.13
-   Motion is gated behind data-motion="1" on <html>.
-   Tailwind CDN strips unknown classes from <html>, so we use a
-   data-attribute instead of a class to survive that rewrite.
    ============================================================= */
 
 (function () {
@@ -12,39 +9,27 @@
   var html = document.documentElement;
 
   /* ----------------------------------------------------------
-     CLEAR SAFETY TIMEOUT immediately — we are executing.
+     RUNTIME CHECKS — done here, not via inline head script,
+     because synchronous CDN scripts in <head> can cause the
+     browser to execute end-of-body scripts before the inline
+     head script has run (readyState: loading).
   ---------------------------------------------------------- */
-  if (window._aizahMotionSafetyTimer) {
-    clearTimeout(window._aizahMotionSafetyTimer);
-    window._aizahMotionSafetyTimer = null;
-  }
 
-  /* ----------------------------------------------------------
-     DIAGNOSTICS — remove after confirming working
-  ---------------------------------------------------------- */
-  console.log('[AizaahMotion] motion.js executing');
-  console.log('[AizaahMotion] data-motion on <html>:', html.getAttribute('data-motion'));
-  console.log('[AizaahMotion] gsap:', typeof gsap);
-  console.log('[AizaahMotion] ScrollTrigger:', typeof ScrollTrigger);
-  console.log('[AizaahMotion] Lenis:', typeof Lenis);
-  console.log('[AizaahMotion] readyState:', document.readyState);
-
-  /* ----------------------------------------------------------
-     GUARD: only run if data-motion="1" is present on <html>.
-  ---------------------------------------------------------- */
-  if (html.getAttribute('data-motion') !== '1') {
-    console.warn('[AizaahMotion] BAIL: data-motion not set — reduced-motion or inline script blocked.');
+  // 1. Bail if prefers-reduced-motion
+  if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
     return;
   }
 
-  /* ----------------------------------------------------------
-     GUARD: check required libs loaded
-  ---------------------------------------------------------- */
+  // 2. Bail if required libs missing
   if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined' || typeof Lenis === 'undefined') {
     console.warn('[AizaahMotion] BAIL: missing libs — gsap=' + typeof gsap + ' ST=' + typeof ScrollTrigger + ' Lenis=' + typeof Lenis);
-    html.removeAttribute('data-motion');
     return;
   }
+
+  // 3. Mark <html> so CSS animation states activate
+  html.setAttribute('data-motion', '1');
+
+  console.log('[AizaahMotion] init — readyState:', document.readyState);
 
   /* ----------------------------------------------------------
      HELPERS

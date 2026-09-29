@@ -10,16 +10,38 @@
   'use strict';
 
   /* ----------------------------------------------------------
+     CLEAR SAFETY TIMEOUT immediately — we are executing, so the
+     3-second fallback must not fire and strip js-motion.
+  ---------------------------------------------------------- */
+  if (window._aizahMotionSafetyTimer) {
+    clearTimeout(window._aizahMotionSafetyTimer);
+    window._aizahMotionSafetyTimer = null;
+  }
+
+  /* ----------------------------------------------------------
+     DIAGNOSTICS — remove after confirming working
+  ---------------------------------------------------------- */
+  console.log('[AizaahMotion] motion.js executing');
+  console.log('[AizaahMotion] js-motion on <html>:', document.documentElement.classList.contains('js-motion'));
+  console.log('[AizaahMotion] gsap:', typeof gsap);
+  console.log('[AizaahMotion] ScrollTrigger:', typeof ScrollTrigger);
+  console.log('[AizaahMotion] Lenis:', typeof Lenis);
+  console.log('[AizaahMotion] readyState:', document.readyState);
+
+  /* ----------------------------------------------------------
      GUARD: only run if .js-motion was added by the inline head
      script (which already checked JS + prefers-reduced-motion).
   ---------------------------------------------------------- */
-  if (!document.documentElement.classList.contains('js-motion')) return;
+  if (!document.documentElement.classList.contains('js-motion')) {
+    console.warn('[AizaahMotion] BAIL: js-motion class not present on <html>');
+    return;
+  }
 
   /* ----------------------------------------------------------
      GUARD: check required libs loaded
   ---------------------------------------------------------- */
   if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined' || typeof Lenis === 'undefined') {
-    console.warn('[AizaahMotion] Required libraries not loaded. Aborting motion init.');
+    console.warn('[AizaahMotion] BAIL: missing libs — gsap=' + typeof gsap + ' ST=' + typeof ScrollTrigger + ' Lenis=' + typeof Lenis);
     document.documentElement.classList.remove('js-motion');
     return;
   }
@@ -679,12 +701,6 @@
     // 10. Patch modal + mobile menu for Lenis lock
     patchModalScrollLock();
     patchMobileMenuScrollLock();
-
-    // 11. Clear safety timeout — motion.js initialised successfully
-    if (window._aizahMotionSafetyTimer) {
-      clearTimeout(window._aizahMotionSafetyTimer);
-      window._aizahMotionSafetyTimer = null;
-    }
   }
 
   // Run after DOM is ready (script is deferred, so DOM is ready)

@@ -3,14 +3,14 @@
 <head>
 <script>
   /* Inline: add js-motion to <html> ONLY if JS runs AND user has no
-     reduced-motion preference. A 3-second safety timeout removes the
+     reduced-motion preference. A 10-second safety timeout removes the
      class if motion.js fails to initialise (clears itself on success). */
   (function(){
     if(window.matchMedia&&window.matchMedia('(prefers-reduced-motion:reduce)').matches)return;
     document.documentElement.classList.add('js-motion');
     window._aizahMotionSafetyTimer=setTimeout(function(){
       document.documentElement.classList.remove('js-motion');
-    },3000);
+    },10000);
   }());
 </script>
 <meta charset="UTF-8" />
@@ -194,7 +194,6 @@
 <!-- Lenis 1.1.13 smooth scroll -->
 <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js"></script>
 <!-- motion.js deferred — runs after DOM ready, libs already loaded above -->
-<script src="{% static 'js/motion.js' %}" defer></script>
 </head>
 <body class="bg-[#f5fbfd] text-slate-900">
 
@@ -1805,5 +1804,7 @@
   }
 }());
 </script>
+<!-- Phase 1 motion — placed after all page JS so DOM + libs are ready -->
+<script src="{% static 'js/motion.js' %}"></script>
 </body>
 </html>

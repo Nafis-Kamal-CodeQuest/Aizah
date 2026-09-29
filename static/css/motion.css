@@ -1,7 +1,7 @@
 /* =============================================================
    AIZAH FMCG - motion.css
    Phase 1 motion/animation layer.
-   ALL hidden/initial states are scoped under .js-motion so that
+   ALL hidden/initial states are scoped under [data-motion="1"] so that
    the page looks and works exactly as before when JS is disabled
    or prefers-reduced-motion is set.
    ============================================================= */
@@ -38,7 +38,7 @@ html.lenis body {
   display: none;
 }
 
-.js-motion #scroll-progress {
+[data-motion="1"] #scroll-progress {
   position: fixed;
   top: 0;
   left: 0;
@@ -55,13 +55,13 @@ html.lenis body {
 
 /* -------------------------------------------------------------
    PRELOADER
-   Default: hidden. Only shown when .js-motion is active.
+   Default: hidden. Only shown when [data-motion="1"] is active.
    ------------------------------------------------------------- */
 #preloader {
   display: none; /* hidden by default — no-JS / reduced-motion fallback */
 }
 
-.js-motion #preloader {
+[data-motion="1"] #preloader {
   position: fixed;
   inset: 0;
   z-index: 99999;
@@ -74,7 +74,7 @@ html.lenis body {
   pointer-events: all;
 }
 
-.js-motion #preloader.done {
+[data-motion="1"] #preloader.done {
   pointer-events: none;
 }
 
@@ -98,8 +98,8 @@ html.lenis body {
   will-change: clip-path, transform;
 }
 
-/* Under .js-motion, start letters clipped so GSAP can reveal them */
-.js-motion .pre-letter {
+/* Under [data-motion="1"], start letters clipped so GSAP can reveal them */
+[data-motion="1"] .pre-letter {
   clip-path: inset(0 0 100% 0);
 }
 
@@ -131,14 +131,14 @@ html.lenis body {
   color: rgba(6, 182, 212, 0.75);  /* cyan-400 @ 75% */
 }
 
-.js-motion #preloader-tagline {
+[data-motion="1"] #preloader-tagline {
   opacity: 0;
   transform: translateY(6px);
   will-change: opacity, transform;
 }
 
 /* Curtain exit: the whole preloader slides up */
-.js-motion #preloader.curtain-lift {
+[data-motion="1"] #preloader.curtain-lift {
   transform: translateY(-100%);
   transition: transform 0.75s cubic-bezier(0.77, 0, 0.18, 1);
 }
@@ -156,28 +156,28 @@ html.lenis body {
               box-shadow 0.25s ease;
 }
 
-.js-motion #navbar.scrolled {
+[data-motion="1"] #navbar.scrolled {
   background: rgba(2, 6, 23, 0.97);
   box-shadow: 0 1px 12px 0 rgba(0, 0, 0, 0.35);
 }
 
 /* compact height only on scrolled + large viewport */
 @media (min-width: 1024px) {
-  .js-motion #navbar.scrolled .h-16.lg\\:h-20 {
+  [data-motion="1"] #navbar.scrolled .h-16.lg\\:h-20 {
     height: 3.5rem; /* 56px */
   }
 }
 
-.js-motion #navbar.hide-nav:not(.force-show) {
+[data-motion="1"] #navbar.hide-nav:not(.force-show) {
   transform: translateY(-110%);
 }
 
 /* Animated underline on desktop nav links */
 @media (hover: hover) and (pointer: fine) {
-  .js-motion .nav-link {
+  [data-motion="1"] .nav-link {
     position: relative;
   }
-  .js-motion .nav-link::after {
+  [data-motion="1"] .nav-link::after {
     content: '';
     position: absolute;
     bottom: 4px;
@@ -190,20 +190,20 @@ html.lenis body {
     transform-origin: left;
     transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   }
-  .js-motion .nav-link:hover::after {
+  [data-motion="1"] .nav-link:hover::after {
     transform: scaleX(1);
   }
 }
 
 /* Mobile menu link stagger — initial state */
-.js-motion .mobile-link {
+[data-motion="1"] .mobile-link {
   opacity: 0;
   transform: translateX(18px);
 }
 
 /* When the menu is open, motion.js adds .menu-open to #mobileMenu
    — staggered transitions applied via inline transition-delay set in JS */
-.js-motion #mobileMenu.menu-open .mobile-link {
+[data-motion="1"] #mobileMenu.menu-open .mobile-link {
   opacity: 1;
   transform: translateX(0);
   transition: opacity 0.28s ease, transform 0.28s ease;
@@ -211,35 +211,35 @@ html.lenis body {
 
 /* -------------------------------------------------------------
    HERO CAROUSEL — clip-path wipe transition
-   Replaces the plain opacity crossfade only under .js-motion.
+   Replaces the plain opacity crossfade only under [data-motion="1"].
    ------------------------------------------------------------- */
 
 /* While motion is active we take over the carousel crossfade */
-.js-motion .carousel-slide {
+[data-motion="1"] .carousel-slide {
   transition: none; /* disable CSS opacity transition — GSAP handles it */
 }
 
 /* Incoming slide: fully visible rectangle, starts clipped from right */
-.js-motion .carousel-slide.slide-enter {
+[data-motion="1"] .carousel-slide.slide-enter {
   clip-path: inset(0 100% 0 0);
   opacity: 1;
   z-index: 11;
 }
-.js-motion .carousel-slide.slide-enter-active {
+[data-motion="1"] .carousel-slide.slide-enter-active {
   clip-path: inset(0 0% 0 0);
   opacity: 1;
   z-index: 11;
 }
 
 /* Leaving slide drops to z-index 10 so new one is on top */
-.js-motion .carousel-slide.slide-leave {
+[data-motion="1"] .carousel-slide.slide-leave {
   z-index: 10;
   opacity: 1;
 }
 
 /* Ken Burns: subtle slow zoom on the active slide's media element.
    Only the .carousel-media (not .carousel-media-bg). */
-.js-motion .carousel-slide.active .carousel-media {
+[data-motion="1"] .carousel-slide.active .carousel-media {
   animation: kenBurns 8s ease-in-out infinite alternate;
 }
 
@@ -254,19 +254,19 @@ html.lenis body {
 }
 
 /* Hero content text reveal — initial masked state */
-.js-motion .hero-word {
+[data-motion="1"] .hero-word {
   display: inline-block;
   clip-path: inset(0 0 100% 0);
   will-change: clip-path, transform;
 }
 
 /* Hero scroll parallax wrapper */
-.js-motion #home .relative.h-full {
+[data-motion="1"] #home .relative.h-full {
   will-change: transform, opacity;
 }
 
 /* Primary hero CTA — magnetic wrapper */
-.js-motion .hero-cta-magnetic {
+[data-motion="1"] .hero-cta-magnetic {
   display: inline-flex; /* preserve button layout */
   will-change: transform;
 }
@@ -274,7 +274,7 @@ html.lenis body {
 /* -------------------------------------------------------------
    STATS BAR — count-up / fade-rise initial state
    ------------------------------------------------------------- */
-.js-motion [data-count] {
+[data-motion="1"] [data-count] {
   display: inline-block;
 }
 
@@ -284,14 +284,14 @@ html.lenis body {
    DATA-REVEAL UTILITY
    Generic fade-up used by stats bar and future phases.
    ------------------------------------------------------------- */
-.js-motion [data-reveal] {
+[data-motion="1"] [data-reveal] {
   opacity: 0;
   transform: translateY(24px);
   will-change: opacity, transform;
 }
 
 /* Safety timeout: if motion.js fails to init within 3 s,
-   a tiny script in home.html removes .js-motion from <html>
+   a tiny script in home.html removes [data-motion="1"] from <html>
    — making all these hidden states disappear instantly.
    No extra CSS needed here. */
 
@@ -302,14 +302,14 @@ html.lenis body {
 @media (max-width: 768px) {
   /* Hero parallax will be constrained to 30 px max in JS,
      but add a CSS safety to avoid overflow issues */
-  .js-motion #home {
+  [data-motion="1"] #home {
     overflow: hidden;
   }
 }
 
 /* Touch devices: disable magnetic / fine-pointer-only effects */
 @media not all and (hover: hover) and (pointer: fine) {
-  .js-motion .hero-cta-magnetic {
+  [data-motion="1"] .hero-cta-magnetic {
     will-change: auto;
   }
 }

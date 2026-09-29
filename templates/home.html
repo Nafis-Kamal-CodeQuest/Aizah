@@ -188,11 +188,13 @@
 </style>
 <!-- Phase 1 motion layer -->
 <link rel="stylesheet" href="{% static 'css/motion.css' %}" />
-<!-- GSAP 3.12.5 + ScrollTrigger (defer so they don't block render) -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
+<!-- GSAP 3.12.5 + ScrollTrigger — loaded synchronously so motion.js can depend on them -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 <!-- Lenis 1.1.13 smooth scroll -->
-<script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js"></script>
+<!-- motion.js deferred — runs after DOM ready, libs already loaded above -->
+<script src="{% static 'js/motion.js' %}" defer></script>
 </head>
 <body class="bg-[#f5fbfd] text-slate-900">
 
@@ -1803,7 +1805,5 @@
   }
 }());
 </script>
-<!-- Phase 1 motion layer — must load after GSAP/ScrollTrigger/Lenis (all deferred) -->
-<script src="{% static 'js/motion.js' %}" defer></script>
 </body>
 </html>

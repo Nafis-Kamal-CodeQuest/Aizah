@@ -1,6 +1,18 @@
 {% load static %}<!DOCTYPE html>
 <html lang="en">
 <head>
+<script>
+  /* Inline: add js-motion to <html> ONLY if JS runs AND user has no
+     reduced-motion preference. A 3-second safety timeout removes the
+     class if motion.js fails to initialise (clears itself on success). */
+  (function(){
+    if(window.matchMedia&&window.matchMedia('(prefers-reduced-motion:reduce)').matches)return;
+    document.documentElement.classList.add('js-motion');
+    window._aizahMotionSafetyTimer=setTimeout(function(){
+      document.documentElement.classList.remove('js-motion');
+    },3000);
+  }());
+</script>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>{{ brand_name }} — Consumer Food & Beverages</title>
@@ -174,8 +186,33 @@
     position: relative; /* active slide drives container height */
   }
 </style>
+<!-- Phase 1 motion layer -->
+<link rel="stylesheet" href="{% static 'css/motion.css' %}" />
+<!-- GSAP 3.12.5 + ScrollTrigger (defer so they don't block render) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
+<!-- Lenis 1.1.13 smooth scroll -->
+<script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js" defer></script>
 </head>
 <body class="bg-[#f5fbfd] text-slate-900">
+
+  <!-- ============ SCROLL PROGRESS BAR (motion.js scrubs scaleX) ============ -->
+  <div id="scroll-progress" aria-hidden="true"></div>
+
+  <!-- ============ PRELOADER (js-motion gated via motion.js) ============ -->
+  <div id="preloader" aria-hidden="true">
+    <div id="preloader-wordmark" aria-hidden="true">
+      <span class="pre-letter" style="color:#ffffff;">A</span>
+      <span class="pre-letter" style="color:#ffffff;">i</span>
+      <span class="pre-letter" style="color:#ffffff;">z</span>
+      <span class="pre-letter" style="color:#06b6d4;">a</span>
+      <span class="pre-letter" style="color:#06b6d4;">h</span>
+    </div>
+    <p id="preloader-tagline">Food &amp; Beverages</p>
+    <div id="preloader-bar-wrap">
+      <div id="preloader-bar"></div>
+    </div>
+  </div>
 
   <!-- ============ NAVBAR ============ -->
   <header id="navbar" class="sticky top-0 z-40 bg-slate-950/95 text-white backdrop-blur-md border-b border-cyan-500/15">
@@ -244,7 +281,7 @@
   <!-- ============ MOBILE MENU OVERLAY ============ -->
   <div id="mobileMenu" class="fixed inset-0 z-50 md:hidden hidden" aria-modal="true" role="dialog">
     <div id="menuBackdrop" class="absolute inset-0 bg-slate-900/50 backdrop-blur-sm opacity-0 transition-opacity duration-300"></div>
-    <div id="menuPanel" class="mobile-menu-panel absolute top-0 right-0 h-full w-72 max-w-[80%] bg-slate-950 text-white shadow-2xl flex flex-col translate-x-full border-l border-cyan-500/15">
+    <div id="menuPanel" class="mobile-menu-panel absolute top-0 right-0 h-full w-72 max-w-[80%] bg-slate-950 text-white shadow-2xl flex flex-col translate-x-full border-l border-cyan-500/15" data-lenis-prevent>
       <div class="flex items-center justify-between px-5 h-16 border-b border-white/10">
         <img src="{% static 'images/logo.png' %}" alt="Aizah" class="h-10 w-auto max-h-12 object-contain" />
         <button id="menuClose" class="w-9 h-9 inline-flex items-center justify-center rounded-lg text-slate-200 hover:bg-white/10 transition focus-ring" aria-label="Close menu">
@@ -305,19 +342,19 @@
     <section class="bg-white border-b border-slate-200">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
-          <div class="text-center md:text-left">
-            <div class="text-2xl sm:text-3xl font-extrabold text-slate-900">18+</div>
+          <div class="text-center md:text-left" data-reveal data-reveal-delay="0">
+            <div class="text-2xl sm:text-3xl font-extrabold text-slate-900" data-count="18" data-suffix="+" data-stat-delay="0">18+</div>
             <div class="text-xs sm:text-sm text-slate-500 mt-1">Years in FMCG</div>
           </div>
-          <div class="text-center md:text-left">
-            <div class="text-2xl sm:text-3xl font-extrabold text-slate-900">1,200+</div>
+          <div class="text-center md:text-left" data-reveal data-reveal-delay="0.08">
+            <div class="text-2xl sm:text-3xl font-extrabold text-slate-900" data-count="1200" data-suffix="+" data-comma="true" data-stat-delay="0.08">1,200+</div>
             <div class="text-xs sm:text-sm text-slate-500 mt-1">Retail Partners</div>
           </div>
-          <div class="text-center md:text-left">
-            <div class="text-2xl sm:text-3xl font-extrabold text-slate-900">45</div>
+          <div class="text-center md:text-left" data-reveal data-reveal-delay="0.16">
+            <div class="text-2xl sm:text-3xl font-extrabold text-slate-900" data-count="45" data-suffix="" data-stat-delay="0.16">45</div>
             <div class="text-xs sm:text-sm text-slate-500 mt-1">SKUs Nationwide</div>
           </div>
-          <div class="text-center md:text-left">
+          <div class="text-center md:text-left" data-reveal data-reveal-delay="0.24">
             <div class="text-2xl sm:text-3xl font-extrabold text-slate-900">ISO 22000</div>
             <div class="text-xs sm:text-sm text-slate-500 mt-1">Certified Facilities</div>
           </div>
@@ -684,7 +721,7 @@
   <div id="productModal" class="fixed inset-0 z-[60] hidden" aria-modal="true" role="dialog" aria-labelledby="modalTitle">
     <div id="modalBackdrop" class="modal-backdrop absolute inset-0 bg-slate-900/60 backdrop-blur-sm opacity-0"></div>
     <div class="absolute inset-0 flex items-center justify-center p-4 sm:p-6">
-      <div id="modalPanel" class="modal-panel relative bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden opacity-0 translate-y-4">
+      <div id="modalPanel" class="modal-panel relative bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden opacity-0 translate-y-4" data-lenis-prevent>
         <button id="modalClose" class="absolute top-4 right-4 z-10 w-9 h-9 inline-flex items-center justify-center rounded-full bg-white/90 hover:bg-white text-slate-700 shadow-md border border-slate-200 transition focus-ring" aria-label="Close product details">
           <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
         </button>
@@ -1052,7 +1089,7 @@
           (slide.title  ? '<h1 class="mt-4 text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight leading-tight">' + escapeHtml(slide.title) + '</h1>' : '') +
           (slide.subtitle ? '<p class="mt-4 text-sm sm:text-base text-slate-200 max-w-xl leading-relaxed">' + escapeHtml(slide.subtitle) + '</p>' : '') +
           '<div class="mt-7 flex flex-wrap gap-3">' +
-            '<a href="' + escapeHtml(slide.href || '#products') + '" class="inline-flex items-center gap-2 bg-brand-600 hover:bg-brand-700 text-white text-sm font-semibold px-5 py-3 rounded-lg shadow-lg transition focus-ring">' +
+            '<a href="' + escapeHtml(slide.href || '#products') + '" class="hero-cta-magnetic inline-flex items-center gap-2 bg-brand-600 hover:bg-brand-700 text-white text-sm font-semibold px-5 py-3 rounded-lg shadow-lg transition focus-ring">' +
               escapeHtml(slide.cta || 'Explore') +
               '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>' +
             '</a>' +
@@ -1755,6 +1792,8 @@
     initModal();
     initContactForm();
     initBackToTop();
+    // Notify motion.js that dynamic content has rendered
+    document.dispatchEvent(new CustomEvent('aizah:contentrendered'));
   }
 
   if (document.readyState === 'loading') {
@@ -1764,5 +1803,7 @@
   }
 }());
 </script>
+<!-- Phase 1 motion layer — must load after GSAP/ScrollTrigger/Lenis (all deferred) -->
+<script src="{% static 'js/motion.js' %}" defer></script>
 </body>
 </html>

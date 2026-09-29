@@ -153,7 +153,9 @@ STORAGES = {
         "BACKEND": "django.core.files.storage.FileSystemStorage",
     },
     "staticfiles": {
-        "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
+        # In DEBUG, serve directly from STATICFILES_DIRS (no collectstatic needed).
+        # In production, use CompressedStaticFilesStorage for WhiteNoise gzip/brotli.
+        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage" if DEBUG else "whitenoise.storage.CompressedStaticFilesStorage",
     },
 }
 

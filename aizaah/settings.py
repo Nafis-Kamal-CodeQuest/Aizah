@@ -136,12 +136,15 @@ USE_TZ = True
 # STATIC & MEDIA FILES (Configured for cPanel Preview + Main Domain)
 # ---------------------------------------------------------------------------
 
-# Use dynamic path base for cPanel preview subpath (~siteqaxw) or standard domain
-STATIC_URL = '/~siteqaxw/static/' if '91.98.176.112' in str(ALLOWED_HOSTS) else '/static/'
+# Use dynamic path base for cPanel preview subpath (~siteqaxw) or standard domain.
+# Set DJANGO_CPANEL_PREVIEW=true in the production environment to activate the prefix.
+# Locally this env var is unset, so /static/ and /media/ are used.
+_CPANEL = os.environ.get('DJANGO_CPANEL_PREVIEW', '').lower() in ('true', '1', 'yes')
+STATIC_URL = '/~siteqaxw/static/' if _CPANEL else '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-MEDIA_URL = '/~siteqaxw/media/' if '91.98.176.112' in str(ALLOWED_HOSTS) else '/media/'
+MEDIA_URL = '/~siteqaxw/media/' if _CPANEL else '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 # Django 4.2+ Storage Backend Definition

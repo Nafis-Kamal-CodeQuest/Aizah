@@ -19,6 +19,12 @@ html.lenis body {
   scroll-behavior: auto !important; /* override html { scroll-behavior: smooth } */
 }
 
+/* Also suppress native smooth-scroll while motion is active
+   (Lenis provides its own easing — double-smoothing causes lag) */
+html[data-motion="1"] {
+  scroll-behavior: auto !important;
+}
+
 .lenis.lenis-smooth [data-lenis-prevent] {
   overscroll-behavior: contain;
 }
@@ -150,7 +156,6 @@ html.lenis body {
    .force-show — always visible (mobile menu open)
    ------------------------------------------------------------- */
 #navbar {
-  will-change: transform;
   transition: transform 0.32s cubic-bezier(0.4, 0, 0.2, 1),
               background-color 0.25s ease,
               box-shadow 0.25s ease;
@@ -237,9 +242,10 @@ html.lenis body {
   opacity: 1;
 }
 
-/* Ken Burns: subtle slow zoom on the active slide's media element.
-   Only the .carousel-media (not .carousel-media-bg). */
-[data-motion="1"] .carousel-slide.active .carousel-media {
+/* Ken Burns: subtle slow zoom on the active IMAGE slide's media element.
+   Only when hero is in viewport (.hero-in-view class set by IntersectionObserver).
+   Not applied to video slides (.carousel-video). */
+[data-motion="1"] #home.hero-in-view .carousel-slide.active .carousel-media:not(.carousel-video) {
   animation: kenBurns 8s ease-in-out infinite alternate;
 }
 
@@ -257,18 +263,14 @@ html.lenis body {
 [data-motion="1"] .hero-word {
   display: inline-block;
   clip-path: inset(0 0 100% 0);
-  will-change: clip-path, transform;
 }
 
-/* Hero scroll parallax wrapper */
-[data-motion="1"] #home .relative.h-full {
-  will-change: transform, opacity;
-}
+/* Hero scroll parallax wrapper — will-change set/cleared by JS during tween */
+/* (removed permanent will-change: transform, opacity) */
 
 /* Primary hero CTA — magnetic wrapper */
 [data-motion="1"] .hero-cta-magnetic {
   display: inline-flex; /* preserve button layout */
-  will-change: transform;
 }
 
 /* -------------------------------------------------------------
@@ -283,11 +285,11 @@ html.lenis body {
 /* -------------------------------------------------------------
    DATA-REVEAL UTILITY
    Generic fade-up used by stats bar and future phases.
+   will-change is set by JS only during the active tween.
    ------------------------------------------------------------- */
 [data-motion="1"] [data-reveal] {
   opacity: 0;
   transform: translateY(24px);
-  will-change: opacity, transform;
 }
 
 /* Safety timeout: if motion.js fails to init within 3 s,

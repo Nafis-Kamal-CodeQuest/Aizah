@@ -76,8 +76,8 @@
     position: absolute; inset: 0;
     background-size: cover;
     background-position: center center;
-    filter: blur(28px) saturate(1.05) brightness(0.55);
-    transform: scale(1.12); /* hide blurred edges */
+    filter: blur(12px) brightness(0.55);
+    transform: scale(1.08); /* hide blurred edges */
     background-color: #020617;
   }
   .carousel-media {
@@ -139,8 +139,8 @@
     position: absolute; inset: 0;
     background-size: cover;
     background-position: center center;
-    filter: blur(20px) saturate(1.05) brightness(0.7);
-    transform: scale(1.1);
+    filter: blur(8px) brightness(0.7);
+    transform: scale(1.06);
   }
   .promo-media-frame {
     position: relative;
@@ -207,12 +207,15 @@
   </div>
 
   <!-- ============ NAVBAR ============ -->
-  <header id="navbar" class="sticky top-0 z-40 bg-slate-950/95 text-white backdrop-blur-md border-b border-cyan-500/15">
+  <header id="navbar" class="sticky top-0 z-40 bg-slate-950 text-white border-b border-cyan-500/15">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex items-center justify-between h-16 lg:h-20">
         <!-- Brand -->
         <a href="#home" class="flex items-center gap-3 focus-ring rounded-lg">
-          <img src="{% static 'images/logo.png' %}" alt="Aizah" class="h-14 sm:h-16 w-auto max-h-16 object-contain">
+          <picture>
+            <source srcset="{% static 'images/logo-opt.webp' %}" type="image/webp" />
+            <img src="{% static 'images/logo-opt.png' %}" alt="Aizah" class="h-14 sm:h-16 w-auto max-h-16 object-contain" width="90" height="128" />
+          </picture>
           <div class="flex flex-col leading-none">
             <span class="text-[10px] font-semibold uppercase tracking-[0.35em] text-cyan-200">Food & Beverages.</span>
             <span class="text-xs text-slate-400">Trusted trade partner</span>
@@ -275,7 +278,10 @@
     <div id="menuBackdrop" class="absolute inset-0 bg-slate-900/50 backdrop-blur-sm opacity-0 transition-opacity duration-300"></div>
     <div id="menuPanel" class="mobile-menu-panel absolute top-0 right-0 h-full w-72 max-w-[80%] bg-slate-950 text-white shadow-2xl flex flex-col translate-x-full border-l border-cyan-500/15" data-lenis-prevent>
       <div class="flex items-center justify-between px-5 h-16 border-b border-white/10">
-        <img src="{% static 'images/logo.png' %}" alt="Aizah" class="h-10 w-auto max-h-12 object-contain" />
+        <picture>
+          <source srcset="{% static 'images/logo-opt.webp' %}" type="image/webp" />
+          <img src="{% static 'images/logo-opt.png' %}" alt="Aizah" class="h-10 w-auto max-h-12 object-contain" width="90" height="128" />
+        </picture>
         <button id="menuClose" class="w-9 h-9 inline-flex items-center justify-center rounded-lg text-slate-200 hover:bg-white/10 transition focus-ring" aria-label="Close menu">
           <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
         </button>
@@ -321,10 +327,10 @@
     <!-- ============ HERO CAROUSEL ============ -->
     <section id="home" class="relative bg-slate-950">
       <div id="carousel" class="relative h-[520px] sm:h-[560px] lg:h-[620px] overflow-hidden"></div>
-      <button id="prevBtn" class="absolute left-3 sm:left-6 top-1/2 -translate-y-1/2 z-20 w-11 h-11 rounded-full bg-white/15 hover:bg-white/30 backdrop-blur-md text-white border border-white/20 flex items-center justify-center transition focus-ring" aria-label="Previous slide">
+      <button id="prevBtn" class="absolute left-3 sm:left-6 top-1/2 -translate-y-1/2 z-20 w-11 h-11 rounded-full bg-black/30 hover:bg-black/50 text-white border border-white/20 flex items-center justify-center transition focus-ring" aria-label="Previous slide">
         <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
       </button>
-      <button id="nextBtn" class="absolute right-3 sm:right-6 top-1/2 -translate-y-1/2 z-20 w-11 h-11 rounded-full bg-white/15 hover:bg-white/30 backdrop-blur-md text-white border border-white/20 flex items-center justify-center transition focus-ring" aria-label="Next slide">
+      <button id="nextBtn" class="absolute right-3 sm:right-6 top-1/2 -translate-y-1/2 z-20 w-11 h-11 rounded-full bg-black/30 hover:bg-black/50 text-white border border-white/20 flex items-center justify-center transition focus-ring" aria-label="Next slide">
         <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
       </button>
       <div id="dots" class="absolute bottom-5 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2"></div>
@@ -639,7 +645,10 @@
       <div class="grid grid-cols-2 md:grid-cols-4 gap-8 lg:gap-12">
         <div class="col-span-2 md:col-span-1">
           <div class="flex items-center gap-3">
-            <img src="{% static 'images/logo.png' %}" alt="Aizah" class="h-16 sm:h-20 w-auto max-h-16 object-contain" />
+            <picture>
+              <source srcset="{% static 'images/logo-opt.webp' %}" type="image/webp" />
+              <img src="{% static 'images/logo-opt.png' %}" alt="Aizah" class="h-16 sm:h-20 w-auto max-h-16 object-contain" width="90" height="128" />
+            </picture>
             <div>
               <div class="text-[10px] font-semibold uppercase tracking-[0.35em] text-cyan-200">Food & Beverages.</div>
               <div class="text-xs text-slate-400">Trusted trade partner</div>
@@ -720,7 +729,7 @@
         <div class="grid md:grid-cols-2 max-h-[90vh] overflow-y-auto">
           <!-- Image gallery -->
           <div class="relative bg-slate-100 aspect-square md:aspect-auto md:min-h-[460px] select-none">
-            <img id="modalImage" src="" alt="" class="absolute inset-0 w-full h-full object-cover transition-opacity duration-300" />
+            <img id="modalImage" src="" alt="" class="absolute inset-0 w-full h-full object-cover transition-opacity duration-300" decoding="async" />
             <!-- Prev button -->
             <button id="modalImgPrev"
               class="hidden absolute left-2 top-1/2 -translate-y-1/2 z-10 w-9 h-9 rounded-full bg-black/40 hover:bg-black/60 text-white flex items-center justify-center transition focus-ring"
@@ -1069,15 +1078,15 @@
       : '';
     var mediaEl = isVideo
       ? '<video class="carousel-media carousel-video fit-' + fit + '" src="' + escapeHtml(mediaSrc) + '" ' +
-          (isActive ? 'autoplay' : '') + ' muted loop playsinline preload="' + (isActive ? 'auto' : 'metadata') + '"></video>'
-      : '<img src="' + escapeHtml(mediaSrc) + '" alt="' + escapeHtml(slide.title || slide.tag || 'Carousel slide') + '" class="carousel-media fit-' + fit + '" loading="' + (isActive ? 'eager' : 'lazy') + '" />';
+          (isActive ? 'autoplay' : '') + ' muted loop playsinline preload="' + (isActive ? 'metadata' : 'none') + '"></video>'
+      : '<img src="' + escapeHtml(mediaSrc) + '" alt="' + escapeHtml(slide.title || slide.tag || 'Carousel slide') + '" class="carousel-media fit-' + fit + '" loading="' + (isActive ? 'eager' : 'lazy') + '" decoding="async" />';
 
     return '<div class="carousel-slide' + (isActive ? ' active' : '') + '" data-index="' + i + '">' +
       blurredBg + mediaEl +
       '<div class="absolute inset-0 hero-overlay' + (fit === 'contain' ? ' is-light' : '') + '"></div>' +
       '<div class="relative h-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center">' +
         '<div class="max-w-2xl text-white">' +
-          (slide.tag    ? '<span class="inline-flex items-center gap-2 text-xs font-semibold text-white/90 bg-white/10 border border-white/20 px-3 py-1 rounded-full backdrop-blur-sm">' + escapeHtml(slide.tag) + '</span>' : '') +
+          (slide.tag    ? '<span class="inline-flex items-center gap-2 text-xs font-semibold text-white/90 bg-white/15 border border-white/20 px-3 py-1 rounded-full">' + escapeHtml(slide.tag) + '</span>' : '') +
           (slide.title  ? '<h1 class="mt-4 text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight leading-tight">' + escapeHtml(slide.title) + '</h1>' : '') +
           (slide.subtitle ? '<p class="mt-4 text-sm sm:text-base text-slate-200 max-w-xl leading-relaxed">' + escapeHtml(slide.subtitle) + '</p>' : '') +
           '<div class="mt-7 flex flex-wrap gap-3">' +
@@ -1085,7 +1094,7 @@
               escapeHtml(slide.cta || 'Explore') +
               '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>' +
             '</a>' +
-            '<a href="#products" class="inline-flex items-center gap-2 bg-white/10 hover:bg-white/20 border border-white/20 text-white text-sm font-semibold px-5 py-3 rounded-lg backdrop-blur-sm transition focus-ring">View Full Catalog</a>' +
+            '<a href="#products" class="inline-flex items-center gap-2 bg-white/15 hover:bg-white/25 border border-white/20 text-white text-sm font-semibold px-5 py-3 rounded-lg transition focus-ring">View Full Catalog</a>' +
           '</div>' +
         '</div>' +
       '</div>' +
@@ -1206,10 +1215,10 @@
     } else if (fit === 'contain') {
       mediaBlock =
         '<div class="promo-media-bg" style="background-image:url(\'' + escapeHtml(offer.image) + '\');"></div>' +
-        '<img src="' + escapeHtml(offer.image) + '" alt="' + escapeHtml(offer.title || 'Offer') + '" class="promo-media fit-contain transition-transform duration-500" loading="lazy" />';
+        '<img src="' + escapeHtml(offer.image) + '" alt="' + escapeHtml(offer.title || 'Offer') + '" class="promo-media fit-contain transition-transform duration-500" loading="lazy" decoding="async" />';
     } else {
       mediaBlock =
-        '<img src="' + escapeHtml(offer.image) + '" alt="' + escapeHtml(offer.title || 'Offer') + '" class="promo-media fit-cover transition-transform duration-500" loading="lazy" />';
+        '<img src="' + escapeHtml(offer.image) + '" alt="' + escapeHtml(offer.title || 'Offer') + '" class="promo-media fit-cover transition-transform duration-500" loading="lazy" decoding="async" />';
     }
 
     return '<div class="offers-slide' + (isActive ? ' active' : '') + '" data-index="' + i + '" role="group" aria-label="Offer ' + (i + 1) + ' of ' + offers.length + '">' +
@@ -1217,7 +1226,7 @@
         '<div class="' + frameClass + '">' +
           mediaBlock +
           '<div class="absolute top-3 left-3">' +
-            '<span class="inline-flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-1 rounded-full border ' + badgeClass + ' backdrop-blur-sm bg-white/90">' +
+            '<span class="inline-flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-1 rounded-full border ' + badgeClass + ' bg-white/95">' +
               '<span class="w-1.5 h-1.5 rounded-full ' + (offer.badgeTone === 'amber' ? 'bg-amber-500' : 'bg-brand-500') + ' animate-pulse"></span>' +
               escapeHtml(offer.badge || 'Active Offer') +
             '</span>' +
@@ -1353,8 +1362,8 @@
     grid.innerHTML = list.map(function (p, i) {
       return '<article class="product-card group bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-card hover:shadow-card-hover hover:-translate-y-1 transition-all duration-300 cursor-pointer fade-up" data-id="' + escapeHtml(p.id) + '" style="animation-delay:' + ((i % 8) * 60) + 'ms" tabindex="0" role="button" aria-label="View details for ' + escapeHtml(p.name) + '">' +
         '<div class="relative aspect-square overflow-hidden bg-slate-100">' +
-          '<img src="' + escapeHtml(p.image) + '" alt="' + escapeHtml(p.name) + '" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />' +
-          '<div class="absolute top-3 left-3"><span class="inline-flex items-center text-[11px] font-semibold text-slate-700 bg-white/90 backdrop-blur-sm border border-slate-200 px-2.5 py-1 rounded-full shadow-sm">' + escapeHtml(p.category) + '</span></div>' +
+          '<img src="' + escapeHtml(p.image) + '" alt="' + escapeHtml(p.name) + '" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" decoding="async" fetchpriority="low" />' +
+          '<div class="absolute top-3 left-3"><span class="inline-flex items-center text-[11px] font-semibold text-slate-700 bg-white/95 border border-slate-200 px-2.5 py-1 rounded-full shadow-sm">' + escapeHtml(p.category) + '</span></div>' +
         '</div>' +
         '<div class="p-4 sm:p-5">' +
           '<h3 class="font-bold text-slate-900 text-sm sm:text-base leading-snug line-clamp-2 min-h-[2.5rem]">' + escapeHtml(p.name) + '</h3>' +
@@ -1800,6 +1809,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js"></script>
 <script src="{% static 'js/motion.js' %}"></script>
+<!-- Perf overlay — only loads when ?perf=1 is in the URL -->
+<script>if(/[?&]perf=1/.test(location.search)){var s=document.createElement('script');s.src='{% static "js/perf-debug.js" %}';document.body.appendChild(s);}</script>
 </body>
 </html>
 

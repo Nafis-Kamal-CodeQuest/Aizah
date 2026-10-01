@@ -50,7 +50,7 @@
         trigger: document.documentElement,
         start: 'top top',
         end: 'bottom bottom',
-        scrub: 0.2,
+        scrub: true,
       },
     });
   }
@@ -65,13 +65,13 @@
 
   function initLenis() {
     lenis = new Lenis({
-      duration: 1.15,
-      easing: function (t) { return Math.min(1, 1.001 - Math.pow(2, -10 * t)); },
-      orientation: 'vertical',
+      lerp:            0.12,
+      smoothWheel:     true,
+      syncTouch:       false,
+      wheelMultiplier: 1,
+      orientation:     'vertical',
       gestureOrientation: 'vertical',
-      infinite: false,
-      // data-lenis-prevent on modal and mobile-menu panels is handled
-      // natively by Lenis — no custom prevent function needed.
+      infinite:        false,
     });
 
     // Sync Lenis with GSAP ticker
@@ -199,40 +199,42 @@
     var navbar    = document.getElementById('navbar');
     if (!navbar) return;
 
-    var lastY     = window.scrollY;
     var THRESHOLD = 120;
+    // Track state to avoid unnecessary class writes
+    var state = { scrolled: false, hidden: false };
 
-    function onScroll() {
-      var y    = window.scrollY;
-      var diff = y - lastY;
+    // Drive from Lenis scroll event — no window.scrollY reads, no layout reads
+    lenis.on('scroll', function (e) {
+      var y   = e.scroll;
+      var dir = e.direction; // +1 = down, -1 = up
 
-      // Scrolled state (blurred/compact)
-      if (y > 30) {
-        navbar.classList.add('scrolled');
-      } else {
-        navbar.classList.remove('scrolled', 'hide-nav');
-      }
+      var wantScrolled = (y > 30);
+      var wantHidden   = (y > THRESHOLD && dir > 0);
+      var wantVisible  = (dir < 0 || y <= THRESHOLD);
 
-      // Hide on scroll down / show on scroll up
-      if (y > THRESHOLD) {
-        if (diff > 0) {
-          navbar.classList.add('hide-nav');
-        } else if (diff < 0) {
-          navbar.classList.remove('hide-nav');
+      if (wantScrolled !== state.scrolled) {
+        state.scrolled = wantScrolled;
+        if (wantScrolled) {
+          navbar.classList.add('scrolled');
+        } else {
+          navbar.classList.remove('scrolled', 'hide-nav');
+          state.hidden = false;
         }
       }
 
-      lastY = y;
-    }
-
-    window.addEventListener('scroll', onScroll, { passive: true });
-    onScroll(); // initialise
+      if (wantHidden && !state.hidden && !navbar.classList.contains('force-show')) {
+        state.hidden = true;
+        navbar.classList.add('hide-nav');
+      } else if (wantVisible && state.hidden) {
+        state.hidden = false;
+        navbar.classList.remove('hide-nav');
+      }
+    });
 
     // Keep navbar visible while mobile menu is open
     var menuToggle = document.getElementById('menuToggle');
     var menuClose  = document.getElementById('menuClose');
     var backdrop   = document.getElementById('menuBackdrop');
-    var menuPanel  = document.getElementById('menuPanel');
     var mobileMenu = document.getElementById('mobileMenu');
 
     function forceShowNav() { navbar.classList.add('force-show'); }
@@ -243,13 +245,11 @@
     if (backdrop)   backdrop.addEventListener('click', releaseNav);
 
     // Mobile link stagger on menu open
-    // We patch openMenu by watching for mobileMenu unhiding
     var menuObs = new MutationObserver(function (mutations) {
       mutations.forEach(function (m) {
         if (m.type === 'attributes' && m.attributeName === 'class') {
           var hidden = mobileMenu.classList.contains('hidden');
           if (!hidden) {
-            // Menu just opened — stagger links
             mobileMenu.classList.add('menu-open');
             var links = $$('.mobile-link', mobileMenu);
             links.forEach(function (link, i) {
@@ -257,7 +257,6 @@
             });
             forceShowNav();
           } else {
-            // Menu just closed
             mobileMenu.classList.remove('menu-open');
             var links = $$('.mobile-link', mobileMenu);
             links.forEach(function (link) {
@@ -301,7 +300,16 @@
 
     var words = h1 ? splitWords(h1) : [];
 
-    var tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+    var tl = gsap.timeline({
+      defaults: { ease: 'power3.out' },
+      onStart: function () {
+        // Set will-change only while animating
+        words.forEach(function (w) { w.style.willChange = 'clip-path, transform'; });
+      },
+      onComplete: function () {
+        words.forEach(function (w) { w.style.willChange = ''; });
+      },
+    });
 
     if (words.length) {
       tl.fromTo(words,
@@ -350,17 +358,17 @@
     });
   }
 
-  // Hero scroll parallax
+  // Hero scroll parallax — disabled on coarse-pointer (touch/mobile) devices
   function initHeroParallax() {
+    // Skip on touch/mobile — parallax costs paint without benefit on small screens
+    if (window.matchMedia('(pointer: coarse)').matches) return;
+
     var heroSection  = document.getElementById('home');
     var contentWrap  = heroSection ? heroSection.querySelector('.relative.h-full') : null;
     if (!heroSection || !contentWrap) return;
 
-    var isMobile = window.matchMedia('(max-width: 768px)').matches;
-    var yAmt     = isMobile ? 30 : 80;
-
     gsap.to(contentWrap, {
-      y: yAmt,
+      y: 80,
       opacity: 0.4,
       scale: 0.97,
       ease: 'none',
@@ -368,7 +376,11 @@
         trigger: heroSection,
         start: 'top top',
         end: 'bottom top',
-        scrub: 0.8,
+        scrub: true,
+        onToggle: function (self) {
+          // Set will-change only while scrub is active (hero in viewport)
+          contentWrap.style.willChange = self.isActive ? 'transform, opacity' : '';
+        },
       },
     });
   }
@@ -384,39 +396,62 @@
 
     var STRENGTH = 0.35;
     var activeCta = null;
+    var quickX = null;
+    var quickY = null;
+    var cachedRect = null;
 
-    heroSection.addEventListener('mousemove', function (e) {
+    // Cache rect on mouseenter so mousemove never calls getBoundingClientRect
+    heroSection.addEventListener('mouseenter', function (e) {
       var cta = e.target.closest('.hero-cta-magnetic');
       if (!cta) return;
       activeCta = cta;
-      var rect = cta.getBoundingClientRect();
-      var cx   = rect.left + rect.width  / 2;
-      var cy   = rect.top  + rect.height / 2;
-      var dx   = (e.clientX - cx) * STRENGTH;
-      var dy   = (e.clientY - cy) * STRENGTH;
-      gsap.to(cta, { x: dx, y: dy, duration: 0.4, ease: 'power2.out' });
+      cachedRect = cta.getBoundingClientRect();
+      quickX = gsap.quickTo(cta, 'x', { duration: 0.4, ease: 'power2.out' });
+      quickY = gsap.quickTo(cta, 'y', { duration: 0.4, ease: 'power2.out' });
+    }, true); // capture to catch bubbling from child elements
+
+    heroSection.addEventListener('mousemove', function (e) {
+      if (!activeCta || !cachedRect || !quickX || !quickY) return;
+      var cta = e.target.closest('.hero-cta-magnetic');
+      if (cta !== activeCta) return;
+      var cx = cachedRect.left + cachedRect.width  / 2;
+      var cy = cachedRect.top  + cachedRect.height / 2;
+      quickX((e.clientX - cx) * STRENGTH);
+      quickY((e.clientY - cy) * STRENGTH);
     });
 
     heroSection.addEventListener('mouseleave', function (e) {
       var cta = e.target.closest('.hero-cta-magnetic');
-      if (!cta) {
-        // Cursor left the hero section entirely
-        if (activeCta) {
-          gsap.to(activeCta, { x: 0, y: 0, duration: 0.5, ease: 'elastic.out(1, 0.5)' });
-          activeCta = null;
-        }
-        return;
-      }
-      gsap.to(cta, { x: 0, y: 0, duration: 0.5, ease: 'elastic.out(1, 0.5)' });
+      if (!cta && !activeCta) return;
+      var target = cta || activeCta;
+      gsap.to(target, { x: 0, y: 0, duration: 0.5, ease: 'elastic.out(1, 0.5)' });
       activeCta = null;
-    }, true); // capture phase to detect child mouseleave reliably
+      cachedRect = null;
+      quickX = null;
+      quickY = null;
+    }, true);
   }
 
   function initHeroAnimations() {
-    // Wait for the hero carousel to be rendered by the page IIFE
     var heroSection = document.getElementById('home');
     var carousel    = document.getElementById('carousel');
     if (!heroSection || !carousel) return;
+
+    // IntersectionObserver: pause Ken Burns when hero is out of viewport
+    var heroIO = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          heroSection.classList.add('hero-in-view');
+        } else {
+          heroSection.classList.remove('hero-in-view');
+        }
+      });
+    }, { threshold: 0 });
+    heroIO.observe(heroSection);
+    // Set initial state
+    if (heroSection.getBoundingClientRect().top < window.innerHeight) {
+      heroSection.classList.add('hero-in-view');
+    }
 
     // Hook into Carousel._onSlideChange via a CustomEvent
     // The page IIFE's heroCarousel is stored in its internal `state` object.
@@ -460,7 +495,7 @@
 
       ScrollTrigger.create({
         trigger: el,
-        start: 'top 60%',
+        start: 'top 80%',
         once: true,
         onEnter: function () {
           var obj = { val: 0 };
@@ -503,12 +538,16 @@
         start: 'top 88%',
         once: true,
         onEnter: function () {
+          el.style.willChange = 'opacity, transform';
           gsap.to(el, {
             opacity: 1,
             y: 0,
             duration: 0.65,
             delay: delay,
             ease: 'power2.out',
+            onComplete: function () {
+              el.style.willChange = '';
+            },
           });
         },
       });

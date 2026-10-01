@@ -315,3 +315,18 @@ html[data-motion="1"] {
     will-change: auto;
   }
 }
+
+/* =============================================================
+   PHASE 2 additions
+   ============================================================= */
+
+/* About h2 word-split — reuse .hero-word clip mask */
+[data-motion="1"] #about h2 .hero-word {
+  clip-path: inset(0 0 100% 0);
+}
+
+/* Product grid overflow clip so translateY entrance doesn't show
+   cards above the grid container while animating in */
+[data-motion="1"] #productsGrid {
+  overflow: hidden;
+}

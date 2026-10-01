@@ -685,6 +685,167 @@
   }
 
   /* ----------------------------------------------------------
+     PHASE 2 — SECTION ANIMATIONS
+     Offers card stagger, products grid stagger + filter transition,
+     About section splits, Contact reveals.
+     All gated by [data-motion="1"] via the existing initDataReveal().
+     These functions add *additional* GSAP-driven sequences on top
+     of the generic [data-reveal] utility.
+  ---------------------------------------------------------- */
+
+  /* ── Offers: stagger the carousel cards in after content renders ── */
+  function initOffersAnimations() {
+    var carousel = document.getElementById('offersCarousel');
+    if (!carousel) return;
+
+    function animateCards() {
+      var cards = Array.from(carousel.querySelectorAll('.offers-slide'));
+      if (!cards.length) return;
+      // Stagger active + inactive cards from y=40 opacity=0
+      gsap.fromTo(cards,
+        { opacity: 0, y: 40 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.55,
+          stagger: 0.10,
+          ease: 'power2.out',
+          clearProps: 'transform',
+        }
+      );
+    }
+
+    // Wait for offers to be injected by the IIFE
+    var obs = new MutationObserver(function () {
+      if (carousel.children.length > 0) {
+        obs.disconnect();
+        // Small delay so the carousel CSS stacking is stable
+        setTimeout(animateCards, 80);
+      }
+    });
+    obs.observe(carousel, { childList: true });
+    if (carousel.children.length > 0) animateCards();
+  }
+
+  /* ── Products: stagger on first render, crossfade on re-render ── */
+  function initProductsAnimations() {
+    var grid = document.getElementById('productsGrid');
+    if (!grid) return;
+
+    var firstRender = true;
+
+    function animateGrid(cards) {
+      if (!cards.length) return;
+      if (firstRender) {
+        firstRender = false;
+        // Full stagger entrance from below
+        gsap.fromTo(cards,
+          { opacity: 0, y: 32 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.45,
+            stagger: 0.06,
+            ease: 'power2.out',
+            clearProps: 'transform,opacity',
+          }
+        );
+      } else {
+        // Subsequent renders (filter / search): quick fade in
+        gsap.fromTo(cards,
+          { opacity: 0, scale: 0.96 },
+          {
+            opacity: 1,
+            scale: 1,
+            duration: 0.30,
+            stagger: 0.04,
+            ease: 'power2.out',
+            clearProps: 'transform,opacity',
+          }
+        );
+      }
+    }
+
+    // Watch for grid content changes
+    var obs = new MutationObserver(function () {
+      var cards = Array.from(grid.querySelectorAll('.product-card'));
+      if (cards.length) {
+        // Cancel any running tween so stagger doesn't stack
+        gsap.killTweensOf(cards);
+        animateGrid(cards);
+      }
+    });
+    obs.observe(grid, { childList: true });
+
+    // Animate initial render if cards already present
+    var initial = Array.from(grid.querySelectorAll('.product-card'));
+    if (initial.length) animateGrid(initial);
+  }
+
+  /* ── About: split the h2 headline into words for a mask reveal ── */
+  function initAboutAnimations() {
+    var aboutSection = document.getElementById('about');
+    if (!aboutSection) return;
+
+    var h2 = aboutSection.querySelector('h2');
+    if (!h2) return;
+
+    // Re-use the existing splitWords helper
+    var words = splitWords(h2);
+    if (!words.length) return;
+
+    ScrollTrigger.create({
+      trigger: h2,
+      start: 'top 85%',
+      once: true,
+      onEnter: function () {
+        words.forEach(function (w) { w.style.willChange = 'clip-path, transform'; });
+        gsap.fromTo(words,
+          { clipPath: 'inset(0 0 100% 0)', y: 10 },
+          {
+            clipPath: 'inset(0 0 0% 0)',
+            y: 0,
+            duration: 0.55,
+            stagger: 0.045,
+            ease: 'power3.out',
+            onComplete: function () {
+              words.forEach(function (w) { w.style.willChange = ''; });
+            },
+          }
+        );
+      },
+    });
+  }
+
+  /* ── Footer: simple fade-up for the 4 footer columns ── */
+  function initFooterAnimations() {
+    var footer = document.querySelector('footer');
+    if (!footer) return;
+
+    var cols = Array.from(footer.querySelectorAll('.grid > div'));
+    if (!cols.length) return;
+
+    ScrollTrigger.create({
+      trigger: footer,
+      start: 'top 90%',
+      once: true,
+      onEnter: function () {
+        gsap.fromTo(cols,
+          { opacity: 0, y: 24 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.5,
+            stagger: 0.08,
+            ease: 'power2.out',
+            clearProps: 'transform,opacity',
+          }
+        );
+      },
+    });
+  }
+
+  /* ----------------------------------------------------------
      INIT SEQUENCE
   ---------------------------------------------------------- */
   function init() {
@@ -714,7 +875,7 @@
     // 7. Stats count-up
     initStatsCountUp();
 
-    // 8. Data-reveal utility
+    // 8. Data-reveal utility (generic fade-up for all [data-reveal] elements)
     initDataReveal();
 
     // 9. ScrollTrigger refresh hooks
@@ -723,6 +884,12 @@
     // 10. Patch modal + mobile menu for Lenis lock
     patchModalScrollLock();
     patchMobileMenuScrollLock();
+
+    // 11. Phase 2 section animations
+    initOffersAnimations();
+    initProductsAnimations();
+    initAboutAnimations();
+    initFooterAnimations();
   }
 
   // Run after DOM is ready (script is deferred, so DOM is ready)

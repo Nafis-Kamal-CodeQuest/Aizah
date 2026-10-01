@@ -137,14 +137,19 @@ USE_TZ = True
 # ---------------------------------------------------------------------------
 
 # Use dynamic path base for cPanel preview subpath (~siteqaxw) or standard domain.
-# Set DJANGO_CPANEL_PREVIEW=true in the production environment to activate the prefix.
-# Locally this env var is unset, so /static/ and /media/ are used.
-_CPANEL = os.environ.get('DJANGO_CPANEL_PREVIEW', '').lower() in ('true', '1', 'yes')
-STATIC_URL = '/~siteqaxw/static/' if _CPANEL else '/static/'
+# This reproduces the original main-branch behavior: '91.98.176.112' is always
+# present in ALLOWED_HOSTS, so the cPanel prefix is always active on production.
+#
+# LOCAL DEVELOPMENT OVERRIDE: set DJANGO_LOCAL_DEV=true in your shell to get
+# standard /static/ and /media/ URLs with StaticFilesStorage (no collectstatic).
+# Do NOT commit this env var — it must not be set on the cPanel server.
+_LOCAL_DEV = os.environ.get('DJANGO_LOCAL_DEV', '').lower() in ('true', '1', 'yes')
+
+STATIC_URL = '/static/' if _LOCAL_DEV else ('/~siteqaxw/static/' if '91.98.176.112' in str(ALLOWED_HOSTS) else '/static/')
 STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-MEDIA_URL = '/~siteqaxw/media/' if _CPANEL else '/media/'
+MEDIA_URL = '/media/' if _LOCAL_DEV else ('/~siteqaxw/media/' if '91.98.176.112' in str(ALLOWED_HOSTS) else '/media/')
 MEDIA_ROOT = BASE_DIR / 'media'
 
 # Django 4.2+ Storage Backend Definition
@@ -153,9 +158,9 @@ STORAGES = {
         "BACKEND": "django.core.files.storage.FileSystemStorage",
     },
     "staticfiles": {
-        # In DEBUG, serve directly from STATICFILES_DIRS (no collectstatic needed).
-        # In production, use CompressedStaticFilesStorage for WhiteNoise gzip/brotli.
-        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage" if DEBUG else "whitenoise.storage.CompressedStaticFilesStorage",
+        # Local dev: serve directly from STATICFILES_DIRS (no collectstatic needed).
+        # Production/cPanel: use CompressedStaticFilesStorage for WhiteNoise gzip/brotli.
+        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage" if _LOCAL_DEV else "whitenoise.storage.CompressedStaticFilesStorage",
     },
 }
 

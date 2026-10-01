@@ -29,8 +29,6 @@
   // 3. Mark <html> so CSS animation states activate
   html.setAttribute('data-motion', '1');
 
-  console.log('[AizaahMotion] init — readyState:', document.readyState);
-
   /* ----------------------------------------------------------
      HELPERS
   ---------------------------------------------------------- */

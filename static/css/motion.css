@@ -1,0 +1,332 @@
+/* =============================================================
+   AIZAH FMCG - motion.css
+   Phase 1 motion/animation layer.
+   ALL hidden/initial states are scoped under [data-motion="1"] so that
+   the page looks and works exactly as before when JS is disabled
+   or prefers-reduced-motion is set.
+   ============================================================= */
+
+/* -------------------------------------------------------------
+   LENIS smooth scroll
+   https://lenis.darkroom.engineering/
+   ------------------------------------------------------------- */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important; /* override html { scroll-behavior: smooth } */
+}
+
+/* Also suppress native smooth-scroll while motion is active
+   (Lenis provides its own easing — double-smoothing causes lag) */
+html[data-motion="1"] {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+.lenis.lenis-smooth iframe {
+  pointer-events: none;
+}
+
+/* -------------------------------------------------------------
+   SCROLL PROGRESS BAR  (fixed top, 3 px, cyan→amber gradient)
+   ------------------------------------------------------------- */
+#scroll-progress {
+  display: none;
+}
+
+[data-motion="1"] #scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  z-index: 9999;
+  transform-origin: left center;
+  transform: scaleX(0);
+  background: linear-gradient(90deg, #06b6d4 0%, #f59e0b 100%);
+  pointer-events: none;
+  display: block;
+  will-change: transform;
+}
+
+/* -------------------------------------------------------------
+   PRELOADER
+   Default: hidden. Only shown when [data-motion="1"] is active.
+   ------------------------------------------------------------- */
+#preloader {
+  display: none; /* hidden by default — no-JS / reduced-motion fallback */
+}
+
+[data-motion="1"] #preloader {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  background: #020617;          /* slate-950 brand bg */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+  pointer-events: all;
+}
+
+[data-motion="1"] #preloader.done {
+  pointer-events: none;
+}
+
+/* Wordmark letter wrapper */
+#preloader-wordmark {
+  display: flex;
+  align-items: baseline;
+  gap: 0;
+  overflow: hidden;
+}
+
+/* Each letter — starts clipped only when motion is active */
+.pre-letter {
+  display: inline-block;
+  font-family: 'Inter', sans-serif;
+  font-size: clamp(2.5rem, 8vw, 5rem);
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  color: #ffffff;
+  will-change: clip-path, transform;
+}
+
+/* Under [data-motion="1"], start letters clipped so GSAP can reveal them */
+[data-motion="1"] .pre-letter {
+  clip-path: inset(0 0 100% 0);
+}
+
+/* Progress line container */
+#preloader-bar-wrap {
+  width: min(260px, 60vw);
+  height: 2px;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+#preloader-bar {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #06b6d4 0%, #f59e0b 100%);
+  border-radius: 2px;
+  will-change: width;
+  transition: width 0.15s linear;
+}
+
+/* Tagline under wordmark — starts hidden, JS reveals */
+#preloader-tagline {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: rgba(6, 182, 212, 0.75);  /* cyan-400 @ 75% */
+}
+
+[data-motion="1"] #preloader-tagline {
+  opacity: 0;
+  transform: translateY(6px);
+  will-change: opacity, transform;
+}
+
+/* Curtain exit: the whole preloader slides up */
+[data-motion="1"] #preloader.curtain-lift {
+  transform: translateY(-100%);
+  transition: transform 0.75s cubic-bezier(0.77, 0, 0.18, 1);
+}
+
+/* -------------------------------------------------------------
+   NAVBAR MOTION STATES
+   .scrolled  — compact blurred state added when page scrolled
+   .hide-nav  — hidden (scrolling down after 120 px)
+   .force-show — always visible (mobile menu open)
+   ------------------------------------------------------------- */
+#navbar {
+  transition: transform 0.32s cubic-bezier(0.4, 0, 0.2, 1),
+              background-color 0.25s ease,
+              box-shadow 0.25s ease;
+}
+
+[data-motion="1"] #navbar.scrolled {
+  background: rgba(2, 6, 23, 0.97);
+  box-shadow: 0 1px 12px 0 rgba(0, 0, 0, 0.35);
+}
+
+/* compact height only on scrolled + large viewport */
+@media (min-width: 1024px) {
+  [data-motion="1"] #navbar.scrolled .h-16.lg\\:h-20 {
+    height: 3.5rem; /* 56px */
+  }
+}
+
+[data-motion="1"] #navbar.hide-nav:not(.force-show) {
+  transform: translateY(-110%);
+}
+
+/* Animated underline on desktop nav links */
+@media (hover: hover) and (pointer: fine) {
+  [data-motion="1"] .nav-link {
+    position: relative;
+  }
+  [data-motion="1"] .nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: 4px;
+    left: 12px;
+    right: 12px;
+    height: 1.5px;
+    background: #06b6d4;
+    border-radius: 1px;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  [data-motion="1"] .nav-link:hover::after {
+    transform: scaleX(1);
+  }
+}
+
+/* Mobile menu link stagger — initial state */
+[data-motion="1"] .mobile-link {
+  opacity: 0;
+  transform: translateX(18px);
+}
+
+/* When the menu is open, motion.js adds .menu-open to #mobileMenu
+   — staggered transitions applied via inline transition-delay set in JS */
+[data-motion="1"] #mobileMenu.menu-open .mobile-link {
+  opacity: 1;
+  transform: translateX(0);
+  transition: opacity 0.28s ease, transform 0.28s ease;
+}
+
+/* -------------------------------------------------------------
+   HERO CAROUSEL — clip-path wipe transition
+   Replaces the plain opacity crossfade only under [data-motion="1"].
+   ------------------------------------------------------------- */
+
+/* While motion is active we take over the carousel crossfade */
+[data-motion="1"] .carousel-slide {
+  transition: none; /* disable CSS opacity transition — GSAP handles it */
+}
+
+/* Incoming slide: fully visible rectangle, starts clipped from right */
+[data-motion="1"] .carousel-slide.slide-enter {
+  clip-path: inset(0 100% 0 0);
+  opacity: 1;
+  z-index: 11;
+}
+[data-motion="1"] .carousel-slide.slide-enter-active {
+  clip-path: inset(0 0% 0 0);
+  opacity: 1;
+  z-index: 11;
+}
+
+/* Leaving slide drops to z-index 10 so new one is on top */
+[data-motion="1"] .carousel-slide.slide-leave {
+  z-index: 10;
+  opacity: 1;
+}
+
+/* Ken Burns: subtle slow zoom on the active IMAGE slide's media element.
+   Only when hero is in viewport (.hero-in-view class set by IntersectionObserver).
+   Not applied to video slides (.carousel-video). */
+[data-motion="1"] #home.hero-in-view .carousel-slide.active .carousel-media:not(.carousel-video) {
+  animation: kenBurns 8s ease-in-out infinite alternate;
+}
+
+@keyframes kenBurns {
+  from { transform: scale(1);    }
+  to   { transform: scale(1.07); }
+}
+
+/* Pause Ken Burns for reduced-motion (safety net in addition to JS gate) */
+@media (prefers-reduced-motion: reduce) {
+  .carousel-media { animation: none !important; }
+}
+
+/* Hero content text reveal — initial masked state */
+[data-motion="1"] .hero-word {
+  display: inline-block;
+  clip-path: inset(0 0 100% 0);
+}
+
+/* Hero scroll parallax wrapper — will-change set/cleared by JS during tween */
+/* (removed permanent will-change: transform, opacity) */
+
+/* Primary hero CTA — magnetic wrapper */
+[data-motion="1"] .hero-cta-magnetic {
+  display: inline-flex; /* preserve button layout */
+}
+
+/* -------------------------------------------------------------
+   STATS BAR — count-up / fade-rise initial state
+   ------------------------------------------------------------- */
+[data-motion="1"] [data-count] {
+  display: inline-block;
+}
+
+/* The iso stat uses data-reveal only — no extra state needed */
+
+/* -------------------------------------------------------------
+   DATA-REVEAL UTILITY
+   Generic fade-up used by stats bar and future phases.
+   will-change is set by JS only during the active tween.
+   ------------------------------------------------------------- */
+[data-motion="1"] [data-reveal] {
+  opacity: 0;
+  transform: translateY(24px);
+}
+
+/* Safety timeout: if motion.js fails to init within 3 s,
+   a tiny script in home.html removes [data-motion="1"] from <html>
+   — making all these hidden states disappear instantly.
+   No extra CSS needed here. */
+
+/* -------------------------------------------------------------
+   MOBILE / LOW-END FRIENDLY
+   Reduce parallax intensity on small screens.
+   ------------------------------------------------------------- */
+@media (max-width: 768px) {
+  /* Hero parallax will be constrained to 30 px max in JS,
+     but add a CSS safety to avoid overflow issues */
+  [data-motion="1"] #home {
+    overflow: hidden;
+  }
+}
+
+/* Touch devices: disable magnetic / fine-pointer-only effects */
+@media not all and (hover: hover) and (pointer: fine) {
+  [data-motion="1"] .hero-cta-magnetic {
+    will-change: auto;
+  }
+}
+
+/* =============================================================
+   PHASE 2 additions
+   ============================================================= */
+
+/* About h2 word-split — reuse .hero-word clip mask */
+[data-motion="1"] #about h2 .hero-word {
+  clip-path: inset(0 0 100% 0);
+}
+
+/* Product grid overflow clip so translateY entrance doesn't show
+   cards above the grid container while animating in */
+[data-motion="1"] #productsGrid {
+  overflow: hidden;
+}

@@ -1,6 +1,15 @@
 {% load static %}<!DOCTYPE html>
 <html lang="en">
 <head>
+<script>
+  /* Inline motion gate — sets data-motion="1" on <html>.
+     motion.js also checks prefers-reduced-motion at runtime,
+     so this is belt-and-suspenders only. */
+  (function(){
+    if(window.matchMedia&&window.matchMedia('(prefers-reduced-motion:reduce)').matches)return;
+    document.documentElement.setAttribute('data-motion','1');
+  }());
+</script>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>{{ brand_name }} — Consumer Food & Beverages</title>
@@ -67,8 +76,8 @@
     position: absolute; inset: 0;
     background-size: cover;
     background-position: center center;
-    filter: blur(28px) saturate(1.05) brightness(0.55);
-    transform: scale(1.12); /* hide blurred edges */
+    filter: blur(12px) brightness(0.55);
+    transform: scale(1.08); /* hide blurred edges */
     background-color: #020617;
   }
   .carousel-media {
@@ -130,8 +139,8 @@
     position: absolute; inset: 0;
     background-size: cover;
     background-position: center center;
-    filter: blur(20px) saturate(1.05) brightness(0.7);
-    transform: scale(1.1);
+    filter: blur(8px) brightness(0.7);
+    transform: scale(1.06);
   }
   .promo-media-frame {
     position: relative;
@@ -174,16 +183,39 @@
     position: relative; /* active slide drives container height */
   }
 </style>
+<!-- Phase 1 motion layer -->
+<link rel="stylesheet" href="{% static 'css/motion.css' %}" />
 </head>
 <body class="bg-[#f5fbfd] text-slate-900">
 
+  <!-- ============ SCROLL PROGRESS BAR (motion.js scrubs scaleX) ============ -->
+  <div id="scroll-progress" aria-hidden="true"></div>
+
+  <!-- ============ PRELOADER (js-motion gated via motion.js) ============ -->
+  <div id="preloader" aria-hidden="true">
+    <div id="preloader-wordmark" aria-hidden="true">
+      <span class="pre-letter" style="color:#ffffff;">A</span>
+      <span class="pre-letter" style="color:#ffffff;">i</span>
+      <span class="pre-letter" style="color:#ffffff;">z</span>
+      <span class="pre-letter" style="color:#06b6d4;">a</span>
+      <span class="pre-letter" style="color:#06b6d4;">h</span>
+    </div>
+    <p id="preloader-tagline">Food &amp; Beverages</p>
+    <div id="preloader-bar-wrap">
+      <div id="preloader-bar"></div>
+    </div>
+  </div>
+
   <!-- ============ NAVBAR ============ -->
-  <header id="navbar" class="sticky top-0 z-40 bg-slate-950/95 text-white backdrop-blur-md border-b border-cyan-500/15">
+  <header id="navbar" class="sticky top-0 z-40 bg-slate-950 text-white border-b border-cyan-500/15">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex items-center justify-between h-16 lg:h-20">
         <!-- Brand -->
         <a href="#home" class="flex items-center gap-3 focus-ring rounded-lg">
-          <img src="{% static 'images/logo.png' %}" alt="Aizah" class="h-14 sm:h-16 w-auto max-h-16 object-contain">
+          <picture>
+            <source srcset="{% static 'images/logo-opt.webp' %}" type="image/webp" />
+            <img src="{% static 'images/logo-opt.png' %}" alt="Aizah" class="h-14 sm:h-16 w-auto max-h-16 object-contain" width="90" height="128" />
+          </picture>
           <div class="flex flex-col leading-none">
             <span class="text-[10px] font-semibold uppercase tracking-[0.35em] text-cyan-200">Food & Beverages.</span>
             <span class="text-xs text-slate-400">Trusted trade partner</span>
@@ -244,9 +276,12 @@
   <!-- ============ MOBILE MENU OVERLAY ============ -->
   <div id="mobileMenu" class="fixed inset-0 z-50 md:hidden hidden" aria-modal="true" role="dialog">
     <div id="menuBackdrop" class="absolute inset-0 bg-slate-900/50 backdrop-blur-sm opacity-0 transition-opacity duration-300"></div>
-    <div id="menuPanel" class="mobile-menu-panel absolute top-0 right-0 h-full w-72 max-w-[80%] bg-slate-950 text-white shadow-2xl flex flex-col translate-x-full border-l border-cyan-500/15">
+    <div id="menuPanel" class="mobile-menu-panel absolute top-0 right-0 h-full w-72 max-w-[80%] bg-slate-950 text-white shadow-2xl flex flex-col translate-x-full border-l border-cyan-500/15" data-lenis-prevent>
       <div class="flex items-center justify-between px-5 h-16 border-b border-white/10">
-        <img src="{% static 'images/logo.png' %}" alt="Aizah" class="h-10 w-auto max-h-12 object-contain" />
+        <picture>
+          <source srcset="{% static 'images/logo-opt.webp' %}" type="image/webp" />
+          <img src="{% static 'images/logo-opt.png' %}" alt="Aizah" class="h-10 w-auto max-h-12 object-contain" width="90" height="128" />
+        </picture>
         <button id="menuClose" class="w-9 h-9 inline-flex items-center justify-center rounded-lg text-slate-200 hover:bg-white/10 transition focus-ring" aria-label="Close menu">
           <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
         </button>
@@ -292,10 +327,10 @@
     <!-- ============ HERO CAROUSEL ============ -->
     <section id="home" class="relative bg-slate-950">
       <div id="carousel" class="relative h-[520px] sm:h-[560px] lg:h-[620px] overflow-hidden"></div>
-      <button id="prevBtn" class="absolute left-3 sm:left-6 top-1/2 -translate-y-1/2 z-20 w-11 h-11 rounded-full bg-white/15 hover:bg-white/30 backdrop-blur-md text-white border border-white/20 flex items-center justify-center transition focus-ring" aria-label="Previous slide">
+      <button id="prevBtn" class="absolute left-3 sm:left-6 top-1/2 -translate-y-1/2 z-20 w-11 h-11 rounded-full bg-black/30 hover:bg-black/50 text-white border border-white/20 flex items-center justify-center transition focus-ring" aria-label="Previous slide">
         <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
       </button>
-      <button id="nextBtn" class="absolute right-3 sm:right-6 top-1/2 -translate-y-1/2 z-20 w-11 h-11 rounded-full bg-white/15 hover:bg-white/30 backdrop-blur-md text-white border border-white/20 flex items-center justify-center transition focus-ring" aria-label="Next slide">
+      <button id="nextBtn" class="absolute right-3 sm:right-6 top-1/2 -translate-y-1/2 z-20 w-11 h-11 rounded-full bg-black/30 hover:bg-black/50 text-white border border-white/20 flex items-center justify-center transition focus-ring" aria-label="Next slide">
         <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
       </button>
       <div id="dots" class="absolute bottom-5 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2"></div>
@@ -305,20 +340,20 @@
     <section class="bg-white border-b border-slate-200">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
-          <div class="text-center md:text-left">
-            <div class="text-2xl sm:text-3xl font-extrabold text-slate-900">18+</div>
+          <div class="text-center md:text-left" data-reveal data-reveal-delay="0">
+            <div class="text-2xl sm:text-3xl font-extrabold text-slate-900" data-count="10" data-suffix="+" data-stat-delay="0">10+</div>
             <div class="text-xs sm:text-sm text-slate-500 mt-1">Years in FMCG</div>
           </div>
-          <div class="text-center md:text-left">
-            <div class="text-2xl sm:text-3xl font-extrabold text-slate-900">1,200+</div>
+          <div class="text-center md:text-left" data-reveal data-reveal-delay="0.08">
+            <div class="text-2xl sm:text-3xl font-extrabold text-slate-900" data-count="12000" data-suffix="+" data-comma="true" data-stat-delay="0.08">12,000+</div>
             <div class="text-xs sm:text-sm text-slate-500 mt-1">Retail Partners</div>
           </div>
-          <div class="text-center md:text-left">
-            <div class="text-2xl sm:text-3xl font-extrabold text-slate-900">45</div>
+          <div class="text-center md:text-left" data-reveal data-reveal-delay="0.16">
+            <div class="text-2xl sm:text-3xl font-extrabold text-slate-900" data-count="20" data-suffix="" data-stat-delay="0.16">20+</div>
             <div class="text-xs sm:text-sm text-slate-500 mt-1">SKUs Nationwide</div>
           </div>
-          <div class="text-center md:text-left">
-            <div class="text-2xl sm:text-3xl font-extrabold text-slate-900">ISO 22000</div>
+          <div class="text-center md:text-left" data-reveal data-reveal-delay="0.24">
+            <div class="text-2xl sm:text-3xl font-extrabold text-slate-900">BSTI</div>
             <div class="text-xs sm:text-sm text-slate-500 mt-1">Certified Facilities</div>
           </div>
         </div>
@@ -330,14 +365,14 @@
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-10">
           <div>
-            <span class="inline-flex items-center gap-2 text-xs font-semibold text-brand-700 bg-brand-50 border border-brand-100 px-3 py-1 rounded-full">
+            <span data-reveal data-reveal-delay="0" class="inline-flex items-center gap-2 text-xs font-semibold text-brand-700 bg-brand-50 border border-brand-100 px-3 py-1 rounded-full">
               <span class="w-1.5 h-1.5 rounded-full bg-brand-500 animate-pulse"></span>
               Trade Promotions
             </span>
-            <h2 class="mt-3 text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-slate-900">Current B2B Offers</h2>
-            <p class="mt-2 text-slate-600 max-w-xl">Exclusive trade pricing and seasonal incentives verified for our distributor and wholesale network.</p>
+            <h2 data-reveal data-reveal-delay="0.07" class="mt-3 text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-slate-900">Current B2B Offers</h2>
+            <p data-reveal data-reveal-delay="0.14" class="mt-2 text-slate-600 max-w-xl">Exclusive trade pricing and seasonal incentives verified for our distributor and wholesale network.</p>
           </div>
-          <a href="#contact" class="hidden sm:inline-flex items-center gap-2 text-sm font-semibold text-brand-700 hover:text-brand-800 transition">
+          <a data-reveal data-reveal-delay="0.18" href="#contact" class="hidden sm:inline-flex items-center gap-2 text-sm font-semibold text-brand-700 hover:text-brand-800 transition">
             Talk to sales
             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
           </a>
@@ -371,9 +406,9 @@
     <section id="products" class="py-16 sm:py-20 bg-white">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center max-w-2xl mx-auto mb-10">
-          <span class="inline-flex items-center gap-2 text-xs font-semibold text-brand-700 bg-brand-50 border border-brand-100 px-3 py-1 rounded-full">Product Catalog</span>
-          <h2 class="mt-3 text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-slate-900">Explore Our Product Range</h2>
-          <p class="mt-3 text-slate-600">A curated B2B catalog spanning snacks, beverages, and hygiene essentials. Pricing is available to verified trade accounts.</p>
+          <span data-reveal data-reveal-delay="0" class="inline-flex items-center gap-2 text-xs font-semibold text-brand-700 bg-brand-50 border border-brand-100 px-3 py-1 rounded-full">Product Catalog</span>
+          <h2 data-reveal data-reveal-delay="0.07" class="mt-3 text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-slate-900">Explore Our Product Range</h2>
+          <p data-reveal data-reveal-delay="0.14" class="mt-3 text-slate-600">A curated B2B catalog spanning snacks, beverages, and hygiene essentials. Pricing is available to verified trade accounts.</p>
         </div>
 
         <!-- Search + Filters -->
@@ -408,7 +443,7 @@
     <!-- ============ HOME CARE CTA ============ -->
     <section class="py-14 sm:py-16 bg-slate-50 border-t border-slate-100">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="bg-white rounded-2xl border border-slate-200 shadow-card px-6 sm:px-10 py-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
+        <div data-reveal data-reveal-delay="0" class="bg-white rounded-2xl border border-slate-200 shadow-card px-6 sm:px-10 py-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
           <div class="flex items-start gap-4">
             <div class="w-12 h-12 rounded-xl bg-accent-50 flex items-center justify-center flex-shrink-0">
               <svg class="w-6 h-6 text-accent-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
@@ -433,21 +468,21 @@
         <div class="grid lg:grid-cols-2 gap-12 lg:gap-16 items-start">
           <!-- Left: copy -->
           <div>
-            <span class="inline-flex items-center gap-2 text-xs font-semibold text-brand-700 bg-brand-50 border border-brand-100 px-3 py-1 rounded-full">About {{ brand_name }}</span>
-            <h2 class="mt-3 text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-slate-900">Built on trust, refined by process.</h2>
+            <span data-reveal data-reveal-delay="0" class="inline-flex items-center gap-2 text-xs font-semibold text-brand-700 bg-brand-50 border border-brand-100 px-3 py-1 rounded-full">About {{ brand_name }}</span>
+            <h2 data-reveal data-reveal-delay="0.07" class="mt-3 text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-slate-900">Built on trust, refined by process.</h2>
             <p class="mt-4 text-slate-600 leading-relaxed">Since 2007, {{ brand_name }} has manufactured everyday essentials for households across the region. Our vertically integrated facilities produce savory snacks, purified bottled water, and a growing line of hygiene products â€” all under rigorous quality protocols.</p>
             <p class="mt-3 text-slate-600 leading-relaxed">We partner with distributors, modern trade chains, and institutional buyers who value consistency, transparent sourcing, and dependable supply.</p>
 
             <!-- Mission / Vision -->
             <div class="mt-8 grid sm:grid-cols-2 gap-5">
-              <div class="bg-white rounded-xl border border-slate-200 p-5 shadow-card">
+              <div data-reveal data-reveal-delay="0.22" class="bg-white rounded-xl border border-slate-200 p-5 shadow-card">
                 <div class="w-9 h-9 rounded-lg bg-brand-50 flex items-center justify-center mb-3">
                   <svg class="w-5 h-5 text-brand-700" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
                 </div>
                 <h3 class="font-bold text-slate-900">Our Mission</h3>
                 <p class="mt-1.5 text-sm text-slate-600 leading-relaxed">{{ company.mission|default:"Deliver safe, affordable, high-quality consumer essentials to every household through trusted trade partners." }}</p>
               </div>
-              <div class="bg-white rounded-xl border border-slate-200 p-5 shadow-card">
+              <div data-reveal data-reveal-delay="0.30" class="bg-white rounded-xl border border-slate-200 p-5 shadow-card">
                 <div class="w-9 h-9 rounded-lg bg-brand-50 flex items-center justify-center mb-3">
                   <svg class="w-5 h-5 text-brand-700" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
                 </div>
@@ -459,30 +494,30 @@
 
           <!-- Right: values + certifications -->
           <div>
-            <h3 class="text-lg font-bold text-slate-900 mb-4">Core Values</h3>
+            <h3 data-reveal data-reveal-delay="0" class="text-lg font-bold text-slate-900 mb-4">Core Values</h3>
             <div class="grid sm:grid-cols-2 gap-4 mb-10">
-              <div class="flex gap-3">
+              <div data-reveal data-reveal-delay="0.06" class="flex gap-3">
                 <div class="w-8 h-8 shrink-0 rounded-md bg-brand-600 text-white flex items-center justify-center font-bold text-sm">01</div>
                 <div>
                   <div class="font-semibold text-slate-900 text-sm">Quality First</div>
                   <p class="text-sm text-slate-600 mt-0.5">Every batch lab-tested before dispatch.</p>
                 </div>
               </div>
-              <div class="flex gap-3">
+              <div data-reveal data-reveal-delay="0.12" class="flex gap-3">
                 <div class="w-8 h-8 shrink-0 rounded-md bg-brand-600 text-white flex items-center justify-center font-bold text-sm">02</div>
                 <div>
                   <div class="font-semibold text-slate-900 text-sm">Transparent Sourcing</div>
                   <p class="text-sm text-slate-600 mt-0.5">Traceable ingredients from approved vendors.</p>
                 </div>
               </div>
-              <div class="flex gap-3">
+              <div data-reveal data-reveal-delay="0.18" class="flex gap-3">
                 <div class="w-8 h-8 shrink-0 rounded-md bg-brand-600 text-white flex items-center justify-center font-bold text-sm">03</div>
                 <div>
                   <div class="font-semibold text-slate-900 text-sm">Partner Success</div>
                   <p class="text-sm text-slate-600 mt-0.5">Margins, marketing & merchandising support.</p>
                 </div>
               </div>
-              <div class="flex gap-3">
+              <div data-reveal data-reveal-delay="0.24" class="flex gap-3">
                 <div class="w-8 h-8 shrink-0 rounded-md bg-brand-600 text-white flex items-center justify-center font-bold text-sm">04</div>
                 <div>
                   <div class="font-semibold text-slate-900 text-sm">Sustainable Practice</div>
@@ -491,8 +526,8 @@
               </div>
             </div>
 
-            <h3 class="text-lg font-bold text-slate-900 mb-4">Manufacturing & Certifications</h3>
-            <div class="bg-white rounded-xl border border-slate-200 p-5 shadow-card">
+            <h3 data-reveal data-reveal-delay="0.10" class="text-lg font-bold text-slate-900 mb-4">Manufacturing & Certifications</h3>
+            <div data-reveal data-reveal-delay="0.18" class="bg-white rounded-xl border border-slate-200 p-5 shadow-card">
               <p class="text-sm text-slate-600 leading-relaxed mb-4">Our 84,000 sq.ft. facility operates HACCP-aligned lines with in-house microbiology and chemical labs. Annual third-party audits ensure global benchmark compliance.</p>
               <div class="flex flex-wrap gap-2">
                 <span class="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-700 bg-slate-100 border border-slate-200 px-3 py-1.5 rounded-md">
@@ -512,11 +547,11 @@
         <div class="grid lg:grid-cols-2 gap-12 lg:gap-16">
           <!-- Left: info -->
           <div>
-            <span class="inline-flex items-center gap-2 text-xs font-semibold text-brand-700 bg-brand-50 border border-brand-100 px-3 py-1 rounded-full">Contact Sales</span>
-            <h2 class="mt-3 text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-slate-900">Let's build a partnership.</h2>
-            <p class="mt-3 text-slate-600 leading-relaxed max-w-lg">Reach out for trade pricing, distributor onboarding, private label inquiries, or institutional supply. Our trade desk responds within one business day.</p>
+            <span data-reveal data-reveal-delay="0" class="inline-flex items-center gap-2 text-xs font-semibold text-brand-700 bg-brand-50 border border-brand-100 px-3 py-1 rounded-full">Contact Sales</span>
+            <h2 data-reveal data-reveal-delay="0.07" class="mt-3 text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-slate-900">Let's build a partnership.</h2>
+            <p data-reveal data-reveal-delay="0.13" class="mt-3 text-slate-600 leading-relaxed max-w-lg">Reach out for trade pricing, distributor onboarding, private label inquiries, or institutional supply. Our trade desk responds within one business day.</p>
 
-            <div class="mt-8 space-y-4">
+            <div data-reveal data-reveal-delay="0.18" class="mt-8 space-y-4">
               <a href="mailto:{{ contact.email|default:"hr.island.bd@gmail.com" }}" class="flex items-start gap-4 p-4 rounded-xl border border-slate-200 hover:border-brand-200 hover:bg-brand-50/40 transition group">
                 <div class="w-10 h-10 rounded-lg bg-brand-50 text-brand-700 flex items-center justify-center shrink-0 group-hover:bg-brand-600 group-hover:text-white transition">
                   <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
@@ -553,7 +588,7 @@
           </div>
 
           <!-- Right: form -->
-          <div class="bg-slate-50 border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-card">
+          <div data-reveal data-reveal-delay="0.12" class="bg-slate-50 border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-card">
             <h3 class="text-lg font-bold text-slate-900">Request a Trade Quote</h3>
             <p class="text-sm text-slate-600 mt-1">Fill in your details and our trade desk will get back to you.</p>
             <form id="contactForm" class="mt-6 space-y-4" novalidate>
@@ -610,7 +645,10 @@
       <div class="grid grid-cols-2 md:grid-cols-4 gap-8 lg:gap-12">
         <div class="col-span-2 md:col-span-1">
           <div class="flex items-center gap-3">
-            <img src="{% static 'images/logo.png' %}" alt="Aizah" class="h-16 sm:h-20 w-auto max-h-16 object-contain" />
+            <picture>
+              <source srcset="{% static 'images/logo-opt.webp' %}" type="image/webp" />
+              <img src="{% static 'images/logo-opt.png' %}" alt="Aizah" class="h-16 sm:h-20 w-auto max-h-16 object-contain" width="90" height="128" />
+            </picture>
             <div>
               <div class="text-[10px] font-semibold uppercase tracking-[0.35em] text-cyan-200">Food & Beverages.</div>
               <div class="text-xs text-slate-400">Trusted trade partner</div>
@@ -684,14 +722,14 @@
   <div id="productModal" class="fixed inset-0 z-[60] hidden" aria-modal="true" role="dialog" aria-labelledby="modalTitle">
     <div id="modalBackdrop" class="modal-backdrop absolute inset-0 bg-slate-900/60 backdrop-blur-sm opacity-0"></div>
     <div class="absolute inset-0 flex items-center justify-center p-4 sm:p-6">
-      <div id="modalPanel" class="modal-panel relative bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden opacity-0 translate-y-4">
+      <div id="modalPanel" class="modal-panel relative bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden opacity-0 translate-y-4" data-lenis-prevent>
         <button id="modalClose" class="absolute top-4 right-4 z-10 w-9 h-9 inline-flex items-center justify-center rounded-full bg-white/90 hover:bg-white text-slate-700 shadow-md border border-slate-200 transition focus-ring" aria-label="Close product details">
           <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
         </button>
         <div class="grid md:grid-cols-2 max-h-[90vh] overflow-y-auto">
           <!-- Image gallery -->
           <div class="relative bg-slate-100 aspect-square md:aspect-auto md:min-h-[460px] select-none">
-            <img id="modalImage" src="" alt="" class="absolute inset-0 w-full h-full object-cover transition-opacity duration-300" />
+            <img id="modalImage" src="" alt="" class="absolute inset-0 w-full h-full object-cover transition-opacity duration-300" decoding="async" />
             <!-- Prev button -->
             <button id="modalImgPrev"
               class="hidden absolute left-2 top-1/2 -translate-y-1/2 z-10 w-9 h-9 rounded-full bg-black/40 hover:bg-black/60 text-white flex items-center justify-center transition focus-ring"
@@ -1040,23 +1078,23 @@
       : '';
     var mediaEl = isVideo
       ? '<video class="carousel-media carousel-video fit-' + fit + '" src="' + escapeHtml(mediaSrc) + '" ' +
-          (isActive ? 'autoplay' : '') + ' muted loop playsinline preload="' + (isActive ? 'auto' : 'metadata') + '"></video>'
-      : '<img src="' + escapeHtml(mediaSrc) + '" alt="' + escapeHtml(slide.title || slide.tag || 'Carousel slide') + '" class="carousel-media fit-' + fit + '" loading="' + (isActive ? 'eager' : 'lazy') + '" />';
+          (isActive ? 'autoplay' : '') + ' muted loop playsinline preload="' + (isActive ? 'metadata' : 'none') + '"></video>'
+      : '<img src="' + escapeHtml(mediaSrc) + '" alt="' + escapeHtml(slide.title || slide.tag || 'Carousel slide') + '" class="carousel-media fit-' + fit + '" loading="' + (isActive ? 'eager' : 'lazy') + '" decoding="async" />';
 
     return '<div class="carousel-slide' + (isActive ? ' active' : '') + '" data-index="' + i + '">' +
       blurredBg + mediaEl +
       '<div class="absolute inset-0 hero-overlay' + (fit === 'contain' ? ' is-light' : '') + '"></div>' +
       '<div class="relative h-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center">' +
         '<div class="max-w-2xl text-white">' +
-          (slide.tag    ? '<span class="inline-flex items-center gap-2 text-xs font-semibold text-white/90 bg-white/10 border border-white/20 px-3 py-1 rounded-full backdrop-blur-sm">' + escapeHtml(slide.tag) + '</span>' : '') +
+          (slide.tag    ? '<span class="inline-flex items-center gap-2 text-xs font-semibold text-white/90 bg-white/15 border border-white/20 px-3 py-1 rounded-full">' + escapeHtml(slide.tag) + '</span>' : '') +
           (slide.title  ? '<h1 class="mt-4 text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight leading-tight">' + escapeHtml(slide.title) + '</h1>' : '') +
           (slide.subtitle ? '<p class="mt-4 text-sm sm:text-base text-slate-200 max-w-xl leading-relaxed">' + escapeHtml(slide.subtitle) + '</p>' : '') +
           '<div class="mt-7 flex flex-wrap gap-3">' +
-            '<a href="' + escapeHtml(slide.href || '#products') + '" class="inline-flex items-center gap-2 bg-brand-600 hover:bg-brand-700 text-white text-sm font-semibold px-5 py-3 rounded-lg shadow-lg transition focus-ring">' +
+            '<a href="' + escapeHtml(slide.href || '#products') + '" class="hero-cta-magnetic inline-flex items-center gap-2 bg-brand-600 hover:bg-brand-700 text-white text-sm font-semibold px-5 py-3 rounded-lg shadow-lg transition focus-ring">' +
               escapeHtml(slide.cta || 'Explore') +
               '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>' +
             '</a>' +
-            '<a href="#products" class="inline-flex items-center gap-2 bg-white/10 hover:bg-white/20 border border-white/20 text-white text-sm font-semibold px-5 py-3 rounded-lg backdrop-blur-sm transition focus-ring">View Full Catalog</a>' +
+            '<a href="#products" class="inline-flex items-center gap-2 bg-white/15 hover:bg-white/25 border border-white/20 text-white text-sm font-semibold px-5 py-3 rounded-lg transition focus-ring">View Full Catalog</a>' +
           '</div>' +
         '</div>' +
       '</div>' +
@@ -1177,10 +1215,10 @@
     } else if (fit === 'contain') {
       mediaBlock =
         '<div class="promo-media-bg" style="background-image:url(\'' + escapeHtml(offer.image) + '\');"></div>' +
-        '<img src="' + escapeHtml(offer.image) + '" alt="' + escapeHtml(offer.title || 'Offer') + '" class="promo-media fit-contain transition-transform duration-500" loading="lazy" />';
+        '<img src="' + escapeHtml(offer.image) + '" alt="' + escapeHtml(offer.title || 'Offer') + '" class="promo-media fit-contain transition-transform duration-500" loading="lazy" decoding="async" />';
     } else {
       mediaBlock =
-        '<img src="' + escapeHtml(offer.image) + '" alt="' + escapeHtml(offer.title || 'Offer') + '" class="promo-media fit-cover transition-transform duration-500" loading="lazy" />';
+        '<img src="' + escapeHtml(offer.image) + '" alt="' + escapeHtml(offer.title || 'Offer') + '" class="promo-media fit-cover transition-transform duration-500" loading="lazy" decoding="async" />';
     }
 
     return '<div class="offers-slide' + (isActive ? ' active' : '') + '" data-index="' + i + '" role="group" aria-label="Offer ' + (i + 1) + ' of ' + offers.length + '">' +
@@ -1188,7 +1226,7 @@
         '<div class="' + frameClass + '">' +
           mediaBlock +
           '<div class="absolute top-3 left-3">' +
-            '<span class="inline-flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-1 rounded-full border ' + badgeClass + ' backdrop-blur-sm bg-white/90">' +
+            '<span class="inline-flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-1 rounded-full border ' + badgeClass + ' bg-white/95">' +
               '<span class="w-1.5 h-1.5 rounded-full ' + (offer.badgeTone === 'amber' ? 'bg-amber-500' : 'bg-brand-500') + ' animate-pulse"></span>' +
               escapeHtml(offer.badge || 'Active Offer') +
             '</span>' +
@@ -1324,8 +1362,8 @@
     grid.innerHTML = list.map(function (p, i) {
       return '<article class="product-card group bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-card hover:shadow-card-hover hover:-translate-y-1 transition-all duration-300 cursor-pointer fade-up" data-id="' + escapeHtml(p.id) + '" style="animation-delay:' + ((i % 8) * 60) + 'ms" tabindex="0" role="button" aria-label="View details for ' + escapeHtml(p.name) + '">' +
         '<div class="relative aspect-square overflow-hidden bg-slate-100">' +
-          '<img src="' + escapeHtml(p.image) + '" alt="' + escapeHtml(p.name) + '" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />' +
-          '<div class="absolute top-3 left-3"><span class="inline-flex items-center text-[11px] font-semibold text-slate-700 bg-white/90 backdrop-blur-sm border border-slate-200 px-2.5 py-1 rounded-full shadow-sm">' + escapeHtml(p.category) + '</span></div>' +
+          '<img src="' + escapeHtml(p.image) + '" alt="' + escapeHtml(p.name) + '" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" decoding="async" fetchpriority="low" />' +
+          '<div class="absolute top-3 left-3"><span class="inline-flex items-center text-[11px] font-semibold text-slate-700 bg-white/95 border border-slate-200 px-2.5 py-1 rounded-full shadow-sm">' + escapeHtml(p.category) + '</span></div>' +
         '</div>' +
         '<div class="p-4 sm:p-5">' +
           '<h3 class="font-bold text-slate-900 text-sm sm:text-base leading-snug line-clamp-2 min-h-[2.5rem]">' + escapeHtml(p.name) + '</h3>' +
@@ -1755,6 +1793,8 @@
     initModal();
     initContactForm();
     initBackToTop();
+    // Notify motion.js that dynamic content has rendered
+    document.dispatchEvent(new CustomEvent('aizah:contentrendered'));
   }
 
   if (document.readyState === 'loading') {
@@ -1764,5 +1804,15 @@
   }
 }());
 </script>
+<!-- Phase 1 motion: CDN libs + motion.js all at end of body, guaranteed sequential -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js"></script>
+<script src="{% static 'js/motion.js' %}"></script>
+<!-- Perf overlay — only loads when ?perf=1 is in the URL -->
+<script>if(/[?&]perf=1/.test(location.search)){var s=document.createElement('script');s.src='{% static "js/perf-debug.js" %}';document.body.appendChild(s);}</script>
 </body>
 </html>
+
+
+

@@ -94,3 +94,14 @@ Motor vaja-*/
 products/
 media.zip
 tmp/
+
+# =============================================================================
+# Local dev / diagnostic scripts (not part of the app)
+# =============================================================================
+ablation.py
+audit_motion.py
+check_*.py
+parse_trace*.py
+trace_cdp.py
+check_motion*.py
+C:/tmp/

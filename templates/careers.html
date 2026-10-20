@@ -74,15 +74,25 @@
 
     <!-- ============ HERO ============ -->
     <section class="relative bg-slate-950 overflow-hidden">
+      {% if hero.hero_image %}
+      <!-- Uploaded hero image -->
+      <div class="absolute inset-0">
+        <img src="{{ hero.hero_image.url }}" alt="Careers at {{ brand_name }}"
+             class="w-full h-full object-cover object-center opacity-40"
+             decoding="async" />
+      </div>
+      {% else %}
+      <!-- Default gradient -->
       <div class="absolute inset-0 opacity-30" style="background:radial-gradient(circle at 18% 24%, rgba(6,182,212,0.4) 0, transparent 50%), radial-gradient(circle at 82% 74%, rgba(245,158,11,0.25) 0, transparent 45%);"></div>
+      {% endif %}
       <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-28">
         <div class="max-w-3xl text-white">
           <span class="inline-flex items-center gap-2 text-xs font-semibold text-cyan-200 bg-white/10 border border-white/20 px-3 py-1 rounded-full">
             <span class="w-1.5 h-1.5 rounded-full bg-brand-500 animate-pulse"></span>
-            We're hiring
+            {{ hero.hiring_badge }}
           </span>
-          <h1 class="mt-5 text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-tight">Build your career at {{ brand_name }}.</h1>
-          <p class="mt-5 text-base sm:text-lg text-slate-300 max-w-2xl leading-relaxed">We're a growing FMCG manufacturer looking for people who care about quality, consistency, and doing right by our partners. Browse our open roles below.</p>
+          <h1 class="mt-5 text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-tight">{{ hero.hero_heading }}</h1>
+          <p class="mt-5 text-base sm:text-lg text-slate-300 max-w-2xl leading-relaxed">{{ hero.hero_subtext }}</p>
           <div class="mt-8 flex flex-wrap gap-3">
             <a href="#openings" class="inline-flex items-center gap-2 bg-brand-600 hover:bg-brand-700 text-white text-sm font-semibold px-5 py-3 rounded-lg shadow-lg transition focus-ring">
               View open roles

@@ -1,6 +1,47 @@
 from django.db import models
 
 
+class CareerPageSettings(models.Model):
+    """Singleton — controls the careers page hero appearance.
+    Only one row should ever exist. Managed via the admin."""
+
+    hero_image   = models.ImageField(
+        upload_to='careers/hero/',
+        blank=True, null=True,
+        help_text='Background image for the careers hero section. '
+                  'Recommended: 1920×1080 px, JPEG/PNG/WebP. Leave blank for the default gradient.'
+    )
+    hero_heading = models.CharField(
+        max_length=200,
+        default='Build your career at Aizah.',
+        help_text='Main headline on the careers hero.'
+    )
+    hero_subtext = models.TextField(
+        default='We\'re a growing FMCG manufacturer looking for people who care '
+                'about quality, consistency, and doing right by our partners. '
+                'Browse our open roles below.',
+        help_text='Subtext paragraph under the hero headline.'
+    )
+    hiring_badge = models.CharField(
+        max_length=60,
+        default="We're hiring",
+        help_text='Small badge text above the headline (e.g. "We\'re hiring").'
+    )
+
+    class Meta:
+        verbose_name        = 'Career Page Settings'
+        verbose_name_plural = 'Career Page Settings'
+
+    def __str__(self):
+        return 'Career Page Settings'
+
+    @classmethod
+    def get_settings(cls):
+        """Returns the singleton row, creating it with defaults if it doesn't exist."""
+        obj, _ = cls.objects.get_or_create(pk=1)
+        return obj
+
+
 class JobPosting(models.Model):
     """An open job listing published on the careers page."""
     DEPARTMENT_CHOICES = [

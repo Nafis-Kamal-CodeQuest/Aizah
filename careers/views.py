@@ -9,7 +9,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
 from django.views.decorators.http import require_POST
 
-from .models import JobPosting, JobApplication
+from .models import JobPosting, JobApplication, CareerPageSettings
 
 logger = logging.getLogger(__name__)
 
@@ -66,6 +66,7 @@ def careers(request):
         'jobs_json':       json.dumps(jobs, ensure_ascii=False),
         'company':         company,
         'contact':         contact,
+        'hero':            CareerPageSettings.get_settings(),
     })
 
 

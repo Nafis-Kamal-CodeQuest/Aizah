@@ -1,6 +1,24 @@
 from django.contrib import admin
 
-from .models import JobPosting, JobApplication
+from .models import CareerPageSettings, JobPosting, JobApplication
+
+
+@admin.register(CareerPageSettings)
+class CareerPageSettingsAdmin(admin.ModelAdmin):
+    """Singleton admin — hides the 'Add' button after first save."""
+    fieldsets = (
+        ('Hero Section', {
+            'description': 'Controls the large banner at the top of the careers page.',
+            'fields': ('hero_image', 'hero_heading', 'hiring_badge', 'hero_subtext'),
+        }),
+    )
+
+    def has_add_permission(self, request):
+        # Only allow adding if no row exists yet
+        return not CareerPageSettings.objects.exists()
+
+    def has_delete_permission(self, request, obj=None):
+        return False  # Prevent accidental deletion of the singleton
 
 
 class JobApplicationInline(admin.TabularInline):

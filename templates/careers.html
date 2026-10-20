@@ -1,0 +1,451 @@
+{% load static %}<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>{{ brand_name }} — Careers</title>
+<meta name="description" content="Open roles at {{ brand_name }} FMCG. Join our team across production, sales, quality, logistics and more." />
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          brand:  { 50:'#ecfeff',100:'#cffafe',200:'#a5f3fc',500:'#06b6d4',600:'#0891b2',700:'#0e7490',800:'#155e75',900:'#164e63' },
+          accent: { 50:'#fffbeb',100:'#fef3c7',200:'#fde68a',500:'#f59e0b',600:'#d97706',700:'#b45309',800:'#92400e',900:'#78350f' }
+        },
+        fontFamily: { sans: ['Inter','system-ui','sans-serif'] },
+        boxShadow: {
+          'card': '0 1px 2px 0 rgb(15 23 42 / 0.04), 0 1px 3px 0 rgb(15 23 42 / 0.06)',
+          'card-hover': '0 10px 30px -10px rgb(15 23 42 / 0.18), 0 4px 12px -4px rgb(15 23 42 / 0.08)'
+        }
+      }
+    }
+  };
+</script>
+<style>
+  body { font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; }
+  .scroll-lock { overflow: hidden; }
+  .focus-ring:focus-visible { outline: 2px solid #0891b2; outline-offset: 2px; }
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+  .fade-up { animation: fadeUp 0.5s ease-out both; }
+</style>
+</head>
+<body class="bg-[#f5fbfd] text-slate-900">
+
+  <!-- ============ NAVBAR (same brand, lighter for sub-page) ============ -->
+  <header class="sticky top-0 z-40 bg-slate-950 text-white border-b border-cyan-500/15">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16 lg:h-20">
+        <a href="/" class="flex items-center gap-3 focus-ring rounded-lg">
+          <picture>
+            <source srcset="{% static 'images/logo-opt.webp' %}" type="image/webp" />
+            <img src="{% static 'images/logo-opt.png' %}" alt="Aizah" class="h-14 sm:h-16 w-auto max-h-16 object-contain" width="90" height="128" />
+          </picture>
+          <div class="flex flex-col leading-none">
+            <span class="text-[10px] font-semibold uppercase tracking-[0.35em] text-cyan-200">Food &amp; Beverages.</span>
+            <span class="text-xs text-slate-400">Trusted trade partner</span>
+          </div>
+        </a>
+        <nav class="hidden md:flex items-center gap-1" aria-label="Primary">
+          <a href="/" class="px-4 py-2 text-sm font-medium text-slate-200 hover:text-cyan-200 hover:bg-white/5 rounded-lg transition focus-ring">Home</a>
+          <a href="/#products" class="px-4 py-2 text-sm font-medium text-slate-200 hover:text-cyan-200 hover:bg-white/5 rounded-lg transition focus-ring">Products</a>
+          <a href="/#about" class="px-4 py-2 text-sm font-medium text-slate-200 hover:text-cyan-200 hover:bg-white/5 rounded-lg transition focus-ring">About</a>
+          <a href="/#contact" class="px-4 py-2 text-sm font-medium text-slate-200 hover:text-cyan-200 hover:bg-white/5 rounded-lg transition focus-ring">Contact</a>
+          <a href="{% url 'careers:careers' %}" class="px-4 py-2 text-sm font-semibold text-cyan-200 bg-white/5 rounded-lg transition focus-ring">Careers</a>
+        </nav>
+        <a href="/" class="hidden md:inline-flex items-center gap-2 text-sm font-semibold text-brand-700 bg-accent-500 hover:bg-accent-400 text-slate-950 px-5 py-2.5 rounded-lg shadow-sm transition focus-ring">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+          Back to site
+        </a>
+        <a href="/" class="md:hidden inline-flex items-center justify-center w-10 h-10 rounded-lg text-slate-100 hover:bg-white/10 transition focus-ring" aria-label="Back to home">
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- ============ HERO ============ -->
+    <section class="relative bg-slate-950 overflow-hidden">
+      <div class="absolute inset-0 opacity-30" style="background:radial-gradient(circle at 18% 24%, rgba(6,182,212,0.4) 0, transparent 50%), radial-gradient(circle at 82% 74%, rgba(245,158,11,0.25) 0, transparent 45%);"></div>
+      <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-28">
+        <div class="max-w-3xl text-white">
+          <span class="inline-flex items-center gap-2 text-xs font-semibold text-cyan-200 bg-white/10 border border-white/20 px-3 py-1 rounded-full">
+            <span class="w-1.5 h-1.5 rounded-full bg-brand-500 animate-pulse"></span>
+            We're hiring
+          </span>
+          <h1 class="mt-5 text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-tight">Build your career at {{ brand_name }}.</h1>
+          <p class="mt-5 text-base sm:text-lg text-slate-300 max-w-2xl leading-relaxed">We're a growing FMCG manufacturer looking for people who care about quality, consistency, and doing right by our partners. Browse our open roles below.</p>
+          <div class="mt-8 flex flex-wrap gap-3">
+            <a href="#openings" class="inline-flex items-center gap-2 bg-brand-600 hover:bg-brand-700 text-white text-sm font-semibold px-5 py-3 rounded-lg shadow-lg transition focus-ring">
+              View open roles
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+            </a>
+            <a href="#why" class="inline-flex items-center gap-2 bg-white/15 hover:bg-white/25 border border-white/20 text-white text-sm font-semibold px-5 py-3 rounded-lg transition focus-ring">Why work with us</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ WHY WORK WITH US ============ -->
+    <section id="why" class="py-16 sm:py-20 bg-white">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center max-w-2xl mx-auto mb-12">
+          <span class="inline-flex items-center gap-2 text-xs font-semibold text-brand-700 bg-brand-50 border border-brand-100 px-3 py-1 rounded-full">Our Culture</span>
+          <h2 class="mt-3 text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-slate-900">Why join {{ brand_name }}</h2>
+          <p class="mt-3 text-slate-600">We invest in our people the same way we invest in our products.</p>
+        </div>
+        <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div class="bg-slate-50 rounded-xl border border-slate-200 p-6">
+            <div class="w-10 h-10 rounded-lg bg-brand-50 text-brand-700 flex items-center justify-center mb-4">
+              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+            </div>
+            <h3 class="font-bold text-slate-900">Growth paths</h3>
+            <p class="mt-1.5 text-sm text-slate-600 leading-relaxed">Internal promotions and cross-training across production, quality, and commercial teams.</p>
+          </div>
+          <div class="bg-slate-50 rounded-xl border border-slate-200 p-6">
+            <div class="w-10 h-10 rounded-lg bg-brand-50 text-brand-700 flex items-center justify-center mb-4">
+              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            </div>
+            <h3 class="font-bold text-slate-900">Safe workplace</h3>
+            <p class="mt-1.5 text-sm text-slate-600 leading-relaxed">HACCP-aligned facility with in-house labs and annual third-party safety audits.</p>
+          </div>
+          <div class="bg-slate-50 rounded-xl border border-slate-200 p-6">
+            <div class="w-10 h-10 rounded-lg bg-brand-50 text-brand-700 flex items-center justify-center mb-4">
+              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            </div>
+            <h3 class="font-bold text-slate-900">Fair benefits</h3>
+            <p class="mt-1.5 text-sm text-slate-600 leading-relaxed">Competitive salary, festival bonuses, medical allowance, and provident fund.</p>
+          </div>
+          <div class="bg-slate-50 rounded-xl border border-slate-200 p-6">
+            <div class="w-10 h-10 rounded-lg bg-brand-50 text-brand-700 flex items-center justify-center mb-4">
+              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            </div>
+            <h3 class="font-bold text-slate-900">Real team</h3>
+            <p class="mt-1.5 text-sm text-slate-600 leading-relaxed">Flat structure, direct communication, and managers who started on the floor.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ OPENINGS ============ -->
+    <section id="openings" class="py-16 sm:py-20 bg-slate-50">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center max-w-2xl mx-auto mb-10">
+          <span class="inline-flex items-center gap-2 text-xs font-semibold text-brand-700 bg-brand-50 border border-brand-100 px-3 py-1 rounded-full">Open positions</span>
+          <h2 class="mt-3 text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-slate-900">Current openings</h2>
+          <p class="mt-3 text-slate-600">Filter by department to find the role that fits you.</p>
+        </div>
+
+        <!-- Department filter pills -->
+        <div id="deptPills" class="flex flex-wrap justify-center gap-2 mb-8 no-scrollbar"></div>
+
+        <!-- Job cards grid -->
+        <div id="jobsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6"></div>
+
+        <!-- Empty state -->
+        <div id="emptyJobs" class="hidden text-center py-16">
+          <div class="w-16 h-16 mx-auto rounded-full bg-slate-100 flex items-center justify-center mb-4">
+            <svg class="w-8 h-8 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 21l-4.3-4.3"/><circle cx="11" cy="11" r="8"/></svg>
+          </div>
+          <h3 class="text-lg font-semibold text-slate-900">No open roles in this department right now</h3>
+          <p class="mt-1 text-sm text-slate-500">Check back soon or send your CV to {{ contact.email|default:"hr.island.bd@gmail.com" }}.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ APPLY MODAL ============ -->
+    <div id="applyModal" class="fixed inset-0 z-[60] hidden" aria-modal="true" role="dialog" aria-labelledby="applyTitle">
+      <div id="applyBackdrop" class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm opacity-0 transition-opacity duration-250"></div>
+      <div class="absolute inset-0 flex items-center justify-center p-4 sm:p-6">
+        <div id="applyPanel" class="relative bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden opacity-0 translate-y-4 transition-all duration-300">
+          <button id="applyClose" class="absolute top-4 right-4 z-10 w-9 h-9 inline-flex items-center justify-center rounded-full bg-white/90 hover:bg-white text-slate-700 shadow-md border border-slate-200 transition focus-ring" aria-label="Close application form">
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+          <div class="overflow-y-auto max-h-[90vh]">
+            <div class="p-6 sm:p-8">
+              <div class="text-xs font-semibold text-brand-700 bg-brand-50 border border-brand-100 px-2.5 py-1 rounded-full inline-flex" id="applyDeptBadge">Department</div>
+              <h3 id="applyTitle" class="mt-3 text-xl sm:text-2xl font-extrabold tracking-tight text-slate-900">Apply for this role</h3>
+              <p id="applySubtitle" class="mt-1 text-sm text-slate-500"></p>
+
+              <form id="applyForm" class="mt-6 space-y-4" novalidate enctype="multipart/form-data">
+                {% csrf_token %}
+                <input type="hidden" name="job_id" id="applyJobId" value="" />
+
+                <div class="grid sm:grid-cols-2 gap-4">
+                  <div>
+                    <label for="applyName" class="block text-xs font-semibold text-slate-700 mb-1.5">Full Name *</label>
+                    <input id="applyName" name="full_name" type="text" required class="w-full px-3.5 py-2.5 text-sm bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition" placeholder="Jane Doe" />
+                  </div>
+                  <div>
+                    <label for="applyEmail" class="block text-xs font-semibold text-slate-700 mb-1.5">Email *</label>
+                    <input id="applyEmail" name="email" type="email" required class="w-full px-3.5 py-2.5 text-sm bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition" placeholder="jane@example.com" />
+                  </div>
+                </div>
+                <div class="grid sm:grid-cols-2 gap-4">
+                  <div>
+                    <label for="applyPhone" class="block text-xs font-semibold text-slate-700 mb-1.5">Phone</label>
+                    <input id="applyPhone" name="phone" type="tel" class="w-full px-3.5 py-2.5 text-sm bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition" placeholder="+880 1XXX-XXXXXX" />
+                  </div>
+                  <div>
+                    <label for="applyResume" class="block text-xs font-semibold text-slate-700 mb-1.5">Resume (PDF/DOC, ≤5 MB)</label>
+                    <input id="applyResume" name="resume" type="file" accept=".pdf,.doc,.docx,.odt,.rtf,.txt" class="w-full text-sm text-slate-600 file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:bg-brand-50 file:text-brand-700 file:font-semibold hover:file:bg-brand-100 transition" />
+                  </div>
+                </div>
+                <div>
+                  <label for="applyCover" class="block text-xs font-semibold text-slate-700 mb-1.5">Cover letter (optional)</label>
+                  <textarea id="applyCover" name="cover_letter" rows="4" class="w-full px-3.5 py-2.5 text-sm bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition" placeholder="Tell us why you'd be a great fit..."></textarea>
+                </div>
+
+                <div id="applyMsg" class="hidden text-sm rounded-lg px-4 py-2.5 text-center"></div>
+
+                <button type="submit" class="w-full inline-flex items-center justify-center gap-2 bg-brand-600 hover:bg-brand-700 text-white text-sm font-semibold px-5 py-3 rounded-lg shadow-sm transition focus-ring">
+                  Submit application
+                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ============ FOOTER ============ -->
+  <footer class="bg-slate-900 text-slate-300">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+        <div class="flex items-center gap-3">
+          <picture>
+            <source srcset="{% static 'images/logo-opt.webp' %}" type="image/webp" />
+            <img src="{% static 'images/logo-opt.png' %}" alt="Aizah" class="h-12 w-auto object-contain" width="90" height="128" />
+          </picture>
+          <div>
+            <div class="text-[10px] font-semibold uppercase tracking-[0.35em] text-cyan-200">Food &amp; Beverages.</div>
+            <div class="text-xs text-slate-400">Careers at {{ brand_name }}</div>
+          </div>
+        </div>
+        <div class="flex flex-wrap gap-5 text-sm">
+          <a href="/" class="text-slate-400 hover:text-brand-400 transition">Home</a>
+          <a href="/#products" class="text-slate-400 hover:text-brand-400 transition">Products</a>
+          <a href="/#about" class="text-slate-400 hover:text-brand-400 transition">About</a>
+          <a href="/#contact" class="text-slate-400 hover:text-brand-400 transition">Contact</a>
+          <a href="{% url 'careers:careers' %}" class="text-cyan-200">Careers</a>
+        </div>
+      </div>
+      <div class="mt-8 pt-6 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3">
+        <p class="text-xs text-slate-500">© <span id="year"></span> {{ brand_full_name }} All rights reserved.</p>
+        <p class="text-xs text-slate-500">
+          Developed and Maintained by
+          <a href="https://nafis-kamal-codequest.github.io/Portfolio/" target="_blank" rel="noopener noreferrer" class="text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.8)] hover:drop-shadow-[0_0_12px_rgba(255,255,255,1)] transition-all duration-300">Nafis Kamal</a>
+        </p>
+      </div>
+    </div>
+  </footer>
+
+<script>
+(function () {
+  'use strict';
+
+  var jobs = {{ jobs_json|safe }};
+
+  var $ = function (s, c) { return (c || document).querySelector(s); };
+  var $$ = function (s, c) { return Array.from((c || document).querySelectorAll(s)); };
+
+  function escapeHtml(str) {
+    if (str == null) return '';
+    return String(str).replace(/[&<>"']/g, function (c) {
+      return { '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c];
+    });
+  }
+
+  // ── Department filter pills ──
+  var activeDept = 'All';
+  function getDepts() {
+    var seen = {};
+    var list = ['All'];
+    jobs.forEach(function (j) {
+      if (!seen[j.department_key]) { seen[j.department_key] = true; list.push(j.department); }
+    });
+    return list;
+  }
+
+  function renderPills() {
+    var wrap = $('#deptPills');
+    var depts = getDepts();
+    wrap.innerHTML = depts.map(function (d, i) {
+      var key = (i === 0) ? 'All' : (jobs.find(function(j){return j.department===d;})||{}).department_key;
+      var active = (key === activeDept);
+      return '<button data-dept="' + escapeHtml(key) + '" class="pill focus-ring text-sm font-semibold px-4 py-2 rounded-full border transition ' +
+        (active ? 'bg-brand-600 text-white border-brand-600 shadow-sm' : 'bg-white text-slate-700 border-slate-200 hover:border-brand-300 hover:text-brand-700') + '">' +
+        escapeHtml(d) + '</button>';
+    }).join('');
+    $$('.pill', wrap).forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        activeDept = btn.dataset.dept;
+        renderPills();
+        renderJobs();
+      });
+    });
+  }
+
+  function renderJobs() {
+    var grid = $('#jobsGrid');
+    var empty = $('#emptyJobs');
+    var filtered = (activeDept === 'All')
+      ? jobs
+      : jobs.filter(function (j) { return j.department_key === activeDept; });
+
+    if (!filtered.length) {
+      grid.innerHTML = '';
+      empty.classList.remove('hidden');
+      return;
+    }
+    empty.classList.add('hidden');
+
+    grid.innerHTML = filtered.map(function (j, i) {
+      var deadlineStr = j.deadline ? 'Apply by ' + j.deadline : 'Open until filled';
+      return '<article class="job-card fade-up group bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-card hover:shadow-card-hover hover:-translate-y-1 transition-all duration-300" data-job-id="' + j.id + '" style="animation-delay:' + ((i % 6) * 60) + 'ms">' +
+        '<div class="p-5 sm:p-6">' +
+          '<div class="flex items-start justify-between gap-3">' +
+            '<div>' +
+              '<span class="inline-flex items-center text-[11px] font-semibold text-brand-700 bg-brand-50 border border-brand-100 px-2.5 py-1 rounded-full">' + escapeHtml(j.department) + '</span>' +
+              '<h3 class="mt-3 font-bold text-slate-900 text-lg leading-snug">' + escapeHtml(j.title) + '</h3>' +
+              '<div class="mt-2 flex flex-wrap items-center gap-3 text-xs text-slate-500">' +
+                '<span class="inline-flex items-center gap-1">' +
+                  '<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>' +
+                  escapeHtml(j.location) +
+                '</span>' +
+                '<span class="inline-flex items-center gap-1">' +
+                  '<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>' +
+                  escapeHtml(j.type) +
+                '</span>' +
+              '</div>' +
+            '</div>' +
+          '</div>' +
+          '<p class="mt-4 text-sm text-slate-600 leading-relaxed line-clamp-3">' + escapeHtml(j.description) + '</p>' +
+          '<div class="mt-5 flex items-center justify-between">' +
+            '<span class="text-xs text-slate-400">' + escapeHtml(deadlineStr) + '</span>' +
+            '<button class="apply-trigger inline-flex items-center gap-1 text-xs font-semibold text-brand-700 hover:gap-2 transition-all">Apply now ' +
+              '<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>' +
+            '</button>' +
+          '</div>' +
+        '</div>' +
+      '</article>';
+    }).join('');
+
+    $$('.job-card', grid).forEach(function (card) {
+      var applyBtn = card.querySelector('.apply-trigger');
+      var jobId = parseInt(card.dataset.jobId, 10);
+      applyBtn.addEventListener('click', function () { openApplyModal(jobId); });
+    });
+  }
+
+  // ── Apply modal ──
+  function openApplyModal(jobId) {
+    var job = jobs.find(function (j) { return j.id === jobId; });
+    if (!job) return;
+
+    var modal    = $('#applyModal');
+    var backdrop = $('#applyBackdrop');
+    var panel    = $('#applyPanel');
+
+    $('#applyJobId').value       = job.id;
+    $('#applyTitle').textContent  = 'Apply for: ' + job.title;
+    $('#applySubtitle').textContent = job.department + ' • ' + job.location + ' • ' + job.type;
+    $('#applyDeptBadge').textContent = job.department;
+    $('#applyMsg').classList.add('hidden');
+
+    modal.classList.remove('hidden');
+    document.body.classList.add('scroll-lock');
+
+    requestAnimationFrame(function () {
+      backdrop.style.opacity = '1';
+      panel.style.opacity    = '1';
+      panel.style.transform  = 'translateY(0)';
+    });
+
+    setTimeout(function () { $('#applyClose').focus(); }, 120);
+  }
+
+  function closeApplyModal() {
+    var modal    = $('#applyModal');
+    var backdrop = $('#applyBackdrop');
+    var panel    = $('#applyPanel');
+
+    backdrop.style.opacity = '0';
+    panel.style.opacity    = '0';
+    panel.style.transform  = 'translateY(16px)';
+    setTimeout(function () {
+      modal.classList.add('hidden');
+      document.body.classList.remove('scroll-lock');
+    }, 280);
+  }
+
+  function initApplyModal() {
+    $('#applyClose').addEventListener('click', closeApplyModal);
+    $('#applyBackdrop').addEventListener('click', closeApplyModal);
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && !$('#applyModal').classList.contains('hidden')) closeApplyModal();
+    });
+
+    var form = $('#applyForm');
+    form.addEventListener('submit', async function (e) {
+      e.preventDefault();
+      var msg = $('#applyMsg');
+
+      try {
+        var csrfToken = form.querySelector('[name=csrfmiddlewaretoken]').value;
+        var formData = new FormData(form);
+
+        var resp = await fetch('{% url "careers:apply" %}', {
+          method: 'POST',
+          headers: { 'X-CSRFToken': csrfToken },
+          body: formData,
+        });
+        var data = await resp.json();
+        if (data.ok) {
+          msg.textContent = data.message;
+          msg.className = 'text-sm text-brand-700 bg-brand-50 border border-brand-100 rounded-lg px-4 py-2.5 text-center';
+          form.reset();
+          setTimeout(closeApplyModal, 2500);
+        } else {
+          var errText = data.errors
+            ? Object.values(data.errors).join(' ')
+            : (data.error || 'Something went wrong.');
+          msg.textContent = errText;
+          msg.className = 'text-sm text-amber-700 bg-amber-50 border border-amber-100 rounded-lg px-4 py-2.5 text-center';
+        }
+        msg.classList.remove('hidden');
+      } catch (err) {
+        msg.textContent = 'Network error. Please check your connection and try again.';
+        msg.className = 'text-sm text-amber-700 bg-amber-50 border border-amber-100 rounded-lg px-4 py-2.5 text-center';
+        msg.classList.remove('hidden');
+      }
+    });
+  }
+
+  function init() {
+    $('#year').textContent = new Date().getFullYear();
+    renderPills();
+    renderJobs();
+    initApplyModal();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+}());
+</script>
+</body>
+</html>

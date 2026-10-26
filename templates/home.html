@@ -86,10 +86,23 @@
     object-position: center center;
     background: transparent;
   }
-  .carousel-media.fit-cover  { object-fit: cover; }
+  .carousel-media.fit-cover   { object-fit: cover; }
   .carousel-media.fit-contain { object-fit: contain; }
   .carousel-video.fit-contain { object-fit: contain; }
-  .carousel-video.has-error { opacity: 0; }
+  .carousel-video.has-error   { opacity: 0; }
+
+  /* Responsive carousel height — aspect-ratio on small screens so
+     horizontal images are never over-cropped; max-height caps it on
+     large viewports so the hero doesn't dominate the page. */
+  #carousel {
+    height: auto;
+    aspect-ratio: 16 / 7;
+    min-height: 280px;
+    max-height: 680px;
+  }
+  @media (min-width: 1024px) {
+    #carousel { aspect-ratio: 16 / 6; }
+  }
 
   /* Mobile menu */
   .mobile-menu-panel { transition: transform 320ms cubic-bezier(0.4,0,0.2,1); }
@@ -334,7 +347,7 @@
 
     <!-- ============ HERO CAROUSEL ============ -->
     <section id="home" class="relative bg-slate-950">
-      <div id="carousel" class="relative h-[520px] sm:h-[560px] lg:h-[620px] overflow-hidden"></div>
+      <div id="carousel" class="relative w-full overflow-hidden"></div>
       <button id="prevBtn" class="absolute left-3 sm:left-6 top-1/2 -translate-y-1/2 z-20 w-11 h-11 rounded-full bg-black/30 hover:bg-black/50 text-white border border-white/20 flex items-center justify-center transition focus-ring" aria-label="Previous slide">
         <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
       </button>

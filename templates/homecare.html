@@ -46,6 +46,17 @@
   .carousel-video.fit-contain { object-fit: contain; }
   .carousel-video.has-error   { opacity: 0; }
 
+  /* Responsive carousel height — adapts to horizontal images */
+  #hcCarousel {
+    height: auto;
+    aspect-ratio: 16 / 7;
+    min-height: 280px;
+    max-height: 680px;
+  }
+  @media (min-width: 1024px) {
+    #hcCarousel { aspect-ratio: 16 / 6; }
+  }
+
   /* Hero overlay */
   .hero-overlay {
     background:
@@ -196,7 +207,7 @@
        Hidden by default — JS shows it only when slides exist.
        ============================================================ -->
   <section id="hc-hero" class="relative bg-slate-950 hidden">
-    <div id="hcCarousel" class="relative h-[520px] sm:h-[560px] lg:h-[620px] overflow-hidden"></div>
+    <div id="hcCarousel" class="relative w-full overflow-hidden"></div>
     <button id="hcPrevBtn"
       class="absolute left-3 sm:left-6 top-1/2 -translate-y-1/2 z-20 w-11 h-11 rounded-full bg-white/15 hover:bg-white/30 backdrop-blur-md text-white border border-white/20 flex items-center justify-center transition focus-ring"
       aria-label="Previous slide">

@@ -15,10 +15,16 @@ cPanel cron example (every hour):
     0 * * * * /path/to/venv/bin/python /path/to/manage.py retry_sheet_sync >> /tmp/sheet_sync.log 2>&1
 """
 
+import time
+
 from django.core.management.base import BaseCommand
 
 from careers.models import JobApplication
 from careers.sheets import append_application
+
+# Pause between rows when running in bulk to avoid hitting Google Sheets
+# API rate limits (100 requests per 100 seconds per user).
+_INTER_ROW_SLEEP = 1.0  # seconds
 
 
 class Command(BaseCommand):
@@ -36,10 +42,18 @@ class Command(BaseCommand):
             action='store_true',
             help='List unsynced applications without actually syncing them.',
         )
+        parser.add_argument(
+            '--sleep',
+            type=float,
+            default=_INTER_ROW_SLEEP,
+            help=f'Seconds to sleep between rows (default: {_INTER_ROW_SLEEP}). '
+                 'Reduce to 0 if you are certain you won\'t hit API rate limits.',
+        )
 
     def handle(self, *args, **options):
-        limit   = options['limit']
-        dry_run = options['dry_run']
+        limit    = options['limit']
+        dry_run  = options['dry_run']
+        sleep    = options['sleep']
 
         qs = (
             JobApplication.objects
@@ -69,7 +83,11 @@ class Command(BaseCommand):
         synced = 0
         failed = 0
 
-        for app in qs:
+        for i, app in enumerate(qs):
+            # Sleep before each row after the first to avoid rate-limiting.
+            if i > 0 and sleep > 0:
+                time.sleep(sleep)
+
             success = append_application(app)
             if success:
                 JobApplication.objects.filter(pk=app.pk).update(synced_to_sheet=True)

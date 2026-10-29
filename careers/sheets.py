@@ -12,15 +12,25 @@ Environment variables consumed (loaded via settings.py):
 
 Public API used by signals.py:
   append_application(application)  →  True on success, False on failure.
+
+Thread-safety:
+  All writes go through _SHEET_LOCK so concurrent background threads
+  (e.g. two applicants submitting at the same moment) never interleave
+  their header-check + append sequence.
 """
 
 import json
 import logging
 import os
+import threading
 
 logger = logging.getLogger(__name__)
 
-# Column headers written to row 1 when the sheet is empty.
+# Module-level lock — serialises all writes regardless of which thread
+# calls append_application().
+_SHEET_LOCK = threading.Lock()
+
+# Column headers written to A1 when that cell is empty.
 SHEET_HEADERS = [
     'Applied At',
     'Full Name',
@@ -36,10 +46,12 @@ SHEET_HEADERS = [
 ]
 
 
+# ---------------------------------------------------------------------------
+# Auth / client helpers
+# ---------------------------------------------------------------------------
+
 def _get_client():
     """Return an authorised gspread client, or raise if credentials are missing."""
-    # Import here so the module can be imported without gspread installed
-    # (ImportError surfaces only when the function is actually called).
     import gspread
     from google.oauth2.service_account import Credentials
 
@@ -56,9 +68,8 @@ def _get_client():
             'or to the raw JSON string.'
         )
 
-    # Decide: is it a file path or a JSON blob?
     if raw.startswith('{'):
-        # Inline JSON string (common on PaaS / cPanel env-var panels)
+        # Inline JSON string (useful on hosts that only allow env vars)
         info = json.loads(raw)
         creds = Credentials.from_service_account_info(info, scopes=scopes)
     else:
@@ -86,25 +97,64 @@ def _get_sheet():
     return spreadsheet.sheet1
 
 
+# ---------------------------------------------------------------------------
+# Header + formatting helpers
+# ---------------------------------------------------------------------------
+
 def _ensure_header(worksheet):
-    """Write the header row if the sheet is empty (no existing rows)."""
-    existing = worksheet.get_all_values()
-    if not existing:
-        worksheet.append_row(SHEET_HEADERS, value_input_option='RAW')
+    """
+    Write the header row to A1 explicitly if A1 is empty.
+
+    Uses sheet.update() rather than append_row() so the header is
+    guaranteed to land at A1 and never drifts to an unexpected row.
+
+    Also applies one-time formatting:
+      - Freeze row 1 so the header stays visible while scrolling.
+      - Set wrap strategy to CLIP on A:Z so long cells don't blow up
+        row height.
+
+    Must be called inside _SHEET_LOCK.
+    """
+    # Check A1 only — a single cell read is cheap and avoids fetching
+    # the entire sheet on every sync.
+    a1_value = worksheet.acell('A1').value
+    if a1_value:
+        return  # header already present
+
+    # Write header to A1 explicitly.
+    worksheet.update(
+        range_name='A1',
+        values=[SHEET_HEADERS],
+        value_input_option='RAW',
+    )
+    logger.info('sheets: wrote header row to A1')
+
+    # Freeze row 1.
+    worksheet.freeze(rows=1)
+
+    # Clip long text so rows stay a single line tall.
+    worksheet.format('A:Z', {'wrapStrategy': 'CLIP'})
+    logger.info('sheets: applied freeze + CLIP wrap formatting')
+
+
+# ---------------------------------------------------------------------------
+# Row builder
+# ---------------------------------------------------------------------------
+
+def _clean(text):
+    """Replace newlines / carriage-returns with a space to keep cells single-line."""
+    if not text:
+        return ''
+    return str(text).replace('\r\n', ' ').replace('\n', ' ').replace('\r', ' ').strip()
 
 
 def _build_row(application):
-    """Return a list of cell values for one JobApplication row."""
-    # Resume URL: build an absolute URL when possible; fall back to the
-    # raw field name so the row is still useful.
+    """Return a flat list of cell values for one JobApplication row."""
     resume_url = ''
     if application.resume:
         try:
             from django.conf import settings as django_settings
-            base = (
-                getattr(django_settings, 'SITE_URL', '').rstrip('/')
-                or ''
-            )
+            base = getattr(django_settings, 'SITE_URL', '').rstrip('/')
             resume_url = base + application.resume.url
         except Exception:
             resume_url = str(application.resume)
@@ -117,18 +167,22 @@ def _build_row(application):
 
     return [
         applied_at,
-        application.full_name,
-        application.email,
-        application.phone,
-        application.job.title,
-        application.job.get_department_display(),
-        application.job.get_employment_type_display(),
+        _clean(application.full_name),
+        _clean(application.email),
+        _clean(application.phone),
+        _clean(application.job.title),
+        _clean(application.job.get_department_display()),
+        _clean(application.job.get_employment_type_display()),
         resume_url,
-        application.cover_letter,
-        application.get_status_display(),
+        _clean(application.cover_letter),   # multi-line field — newlines stripped
+        _clean(application.get_status_display()),
         str(application.pk),
     ]
 
+
+# ---------------------------------------------------------------------------
+# Public API
+# ---------------------------------------------------------------------------
 
 def append_application(application):
     """
@@ -136,12 +190,22 @@ def append_application(application):
 
     Returns True on success, False on any failure.
     Never raises — callers must not let sheet errors affect the user flow.
+
+    Thread-safe: acquires _SHEET_LOCK so concurrent calls don't race on
+    the header check or produce offset rows.
     """
     try:
-        worksheet = _get_sheet()
-        _ensure_header(worksheet)
-        row = _build_row(application)
-        worksheet.append_row(row, value_input_option='USER_ENTERED')
+        with _SHEET_LOCK:
+            worksheet = _get_sheet()
+            _ensure_header(worksheet)
+            row = _build_row(application)
+            # table_range="A1" anchors the append to column A regardless of
+            # where the API thinks the "table" ends, preventing column offset.
+            worksheet.append_row(
+                row,
+                value_input_option='USER_ENTERED',
+                table_range='A1',
+            )
         logger.info(
             'sheets: appended application pk=%s (%s) to sheet',
             application.pk, application.full_name,

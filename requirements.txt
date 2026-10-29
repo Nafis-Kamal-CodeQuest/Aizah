@@ -14,3 +14,7 @@ sqlparse==0.6.0
 tzdata==2026.3
 packaging==26.3
 brotli==1.2.0
+
+# Google Sheets integration
+gspread==6.1.4
+google-auth==2.35.0

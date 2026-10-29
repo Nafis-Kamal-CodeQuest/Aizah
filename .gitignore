@@ -37,6 +37,12 @@ ENV/
 .env.production
 .env.*.local
 
+# Google service account key files — NEVER commit these
+*service-account*.json
+*service_account*.json
+*-credentials.json
+*-key.json
+
 # =============================================================================
 # Django
 # =============================================================================

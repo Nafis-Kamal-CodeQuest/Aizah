@@ -200,6 +200,17 @@ LOGIN_URL = '/distributor/login/'
 LOGIN_REDIRECT_URL = '/distributor/dashboard/'
 
 # ---------------------------------------------------------------------------
+# GOOGLE SHEETS INTEGRATION
+# ---------------------------------------------------------------------------
+
+# ID of the spreadsheet (from the URL).
+# Keep blank / unset to disable the sync without raising errors at import time.
+GOOGLE_SHEET_ID = os.environ.get('GOOGLE_SHEET_ID', '')
+
+# Absolute path to the service-account JSON key file, OR the raw JSON string.
+GOOGLE_SERVICE_ACCOUNT_JSON = os.environ.get('GOOGLE_SERVICE_ACCOUNT_JSON', '')
+
+# ---------------------------------------------------------------------------
 # LOGGING
 # ---------------------------------------------------------------------------
 

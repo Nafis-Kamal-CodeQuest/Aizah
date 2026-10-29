@@ -105,6 +105,12 @@ class JobApplication(models.Model):
     status       = models.CharField(max_length=20, choices=STATUS_CHOICES, default='submitted')
     applied_at   = models.DateTimeField(auto_now_add=True)
 
+    # Google Sheets sync tracking
+    synced_to_sheet = models.BooleanField(
+        default=False,
+        help_text='Set to True once this application has been successfully appended to Google Sheets.'
+    )
+
     class Meta:
         ordering = ['-applied_at']
 
